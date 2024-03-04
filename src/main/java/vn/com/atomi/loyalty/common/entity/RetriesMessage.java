@@ -10,7 +10,7 @@ import vn.com.atomi.loyalty.base.data.BaseEntity;
  * @version 1.0
  */
 @Entity
-@Table(name = "tbl_retries_message")
+@Table(name = "cm_retries_message")
 @Setter
 @Getter
 @Builder
@@ -20,10 +20,10 @@ public class RetriesMessage extends BaseEntity {
 
   @Id
   @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_retries_message_id_seq")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cm_retries_message_id_seq")
   @SequenceGenerator(
-      name = "tbl_retries_message_id_seq",
-      sequenceName = "tbl_retries_message_id_seq",
+      name = "cm_retries_message_id_seq",
+      sequenceName = "cm_retries_message_id_seq",
       allocationSize = 1)
   private Long id;
 

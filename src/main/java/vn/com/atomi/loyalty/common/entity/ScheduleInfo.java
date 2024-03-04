@@ -11,7 +11,7 @@ import vn.com.atomi.loyalty.common.enums.StatusJob;
  * @version 1.0
  */
 @Entity
-@Table(name = "tbl_schedule_info")
+@Table(name = "cm_schedule_info")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,11 +20,11 @@ import vn.com.atomi.loyalty.common.enums.StatusJob;
 public class ScheduleInfo extends BaseEntity {
 
   @Id
-  @Column(name = "job_info_id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "tbl_schedule_info_id_seq")
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cm_schedule_info_id_seq")
   @SequenceGenerator(
-      name = "tbl_schedule_info_id_seq",
-      sequenceName = "tbl_schedule_info_id_seq",
+      name = "cm_schedule_info_id_seq",
+      sequenceName = "cm_schedule_info_id_seq",
       allocationSize = 1)
   private Long id;
 

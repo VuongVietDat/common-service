@@ -1,6 +1,5 @@
 package vn.com.atomi.loyalty.base.logging;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;

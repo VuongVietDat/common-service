@@ -30,6 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vn.com.atomi.loyalty.base.exception.CustomAccessDeniedHandler;
 import vn.com.atomi.loyalty.base.exception.CustomAuthenticationEntryPoint;
@@ -55,8 +56,10 @@ public class ApplicationSecurityConfig {
         "/**/*.css",
         "/**/*.js",
         "/swagger-ui.html/**",
+        "/swagger-ui/**",
         "/swagger-resources/**",
-        "/v2/api-docs",
+        "/v3/api-docs",
+        "/v3/api-docs/**",
         "/webjars/**",
         "/csrf",
         "/actuator",
@@ -148,6 +151,17 @@ public class ApplicationSecurityConfig {
             .maxAge(3600)
             .allowedHeaders("*")
             .exposedHeaders("*");
+      }
+
+      @Override
+      public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
+        registry
+            .addResourceHandler("swagger-ui.html")
+            .addResourceLocations("classpath:/META-INF/resources/");
+        registry
+            .addResourceHandler("/webjars/**")
+            .addResourceLocations("classpath:/META-INF/resources/webjars/");
       }
     };
   }
