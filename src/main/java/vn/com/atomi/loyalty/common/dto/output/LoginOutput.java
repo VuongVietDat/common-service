@@ -1,6 +1,5 @@
 package vn.com.atomi.loyalty.common.dto.output;
 
-import java.time.ZonedDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +13,9 @@ public class LoginOutput {
 
   private String accessToken;
 
-  private Long expiresIn;
+  private String refreshToken;
 
-  private ZonedDateTime expiredAt;
+  private Long accessExpireIn;
+
+  private Long refreshExpireIn;
 }

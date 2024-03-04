@@ -10,7 +10,7 @@ import vn.com.atomi.loyalty.base.exception.AbstractError;
 public enum ErrorCode implements AbstractError {
   JOB_NOT_EXISTED(
       1,
-      "Server cannot or will not process the request due to something that is to be a client error.",
+      "Không tìm thấy tiến trình với id = %s",
       HttpStatus.BAD_REQUEST),
   ;
 

@@ -1,47 +1,22 @@
 package vn.com.atomi.loyalty.common.security;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.CollectionUtils;
-import vn.com.atomi.loyalty.common.dto.output.UserOutput;
 
 @Getter
 public class UserPrincipal implements UserDetails {
 
   private final String sessionId;
-  private final boolean issueByUser;
+  private final String username;
   private final Collection<SimpleGrantedAuthority> authorities;
-  private final String clientId;
-  private UserOutput userOutput;
-  private String authHeader;
-
-  public UserPrincipal(String clientId, String sessionId, boolean issueByUser) {
-    this.clientId = clientId;
-    this.sessionId = sessionId;
-    this.issueByUser = issueByUser;
-    authorities = new ArrayList<>();
-  }
 
   public UserPrincipal(
-      String clientId,
-      boolean issueByUser,
-      UserOutput userOutput,
-      String sessionId,
-      String authHeader) {
-    this.clientId = clientId;
-    this.userOutput = userOutput;
+      String sessionId, String username, Collection<SimpleGrantedAuthority> authorities) {
     this.sessionId = sessionId;
-    this.authHeader = authHeader;
-    this.issueByUser = issueByUser;
-    authorities = new ArrayList<>();
-    if (!CollectionUtils.isEmpty(userOutput.getUserRoleOutputs())) {
-      userOutput
-          .getUserRoleOutputs()
-          .forEach(v2 -> authorities.add(new SimpleGrantedAuthority("ROLE_" + v2.getCode())));
-    }
+    this.username = username;
+    this.authorities = authorities;
   }
 
   @Override
@@ -51,7 +26,7 @@ public class UserPrincipal implements UserDetails {
 
   @Override
   public String getUsername() {
-    return issueByUser ? userOutput.getId() : clientId;
+    return username;
   }
 
   @Override
