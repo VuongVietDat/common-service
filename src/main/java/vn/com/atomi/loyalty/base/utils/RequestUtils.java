@@ -177,6 +177,10 @@ public class RequestUtils {
     return ThreadContext.get(RequestConstant.REQUEST_ID);
   }
 
+  public static String extractSessionId() {
+    return ThreadContext.get(RequestConstant.SESSION_ID);
+  }
+
   public static String extractServiceName() {
     return ThreadContext.get(RequestConstant.SERVICE_NAME);
   }

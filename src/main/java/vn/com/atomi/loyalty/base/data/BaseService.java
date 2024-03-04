@@ -1,12 +1,10 @@
 package vn.com.atomi.loyalty.base.data;
 
-import org.apache.logging.log4j.ThreadContext;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
 import vn.com.atomi.loyalty.common.mapper.ModelMapper;
@@ -46,9 +44,5 @@ public abstract class BaseService {
       return (UserPrincipal) authentication.getPrincipal();
     }
     throw new BaseException(CommonErrorCode.UNAUTHORIZED);
-  }
-
-  protected String getRequestId() {
-    return ThreadContext.get(RequestConstant.REQUEST_ID);
   }
 }

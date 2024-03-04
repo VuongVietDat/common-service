@@ -33,13 +33,7 @@ public class RequestConstant {
 
   public static final String BASIC_PREFIX = "Basic ";
 
-  public static final String JWT_CLAIM_WALLET = "w";
-
-  public static final String JWT_CLAIM_USER_ID = "uid";
-
-  public static final String JWT_CLAIM_SESSION_ID = "ssid";
-
-  public static final String JWT_ISSUE_BY_USER = "ibu";
+  public static final String SESSION_ID = "sessionId";
 
   public static final String DEVICE_ID = "X-Device-ID";
 
