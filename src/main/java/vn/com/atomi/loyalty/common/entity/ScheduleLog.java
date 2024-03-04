@@ -31,6 +31,9 @@ public class ScheduleLog extends BaseEntity {
   @Column(name = "job_info_id")
   private Long jobId;
 
+  @Column(name = "execute_id")
+  private String executeId;
+
   @Column(name = "start_time")
   private LocalDateTime startTime;
 

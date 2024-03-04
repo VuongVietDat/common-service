@@ -47,9 +47,6 @@ public class ScheduleInfo extends BaseEntity {
   @Column(name = "description")
   private String description;
 
-  @Column(name = "interface_name")
-  private String interfaceName;
-
   @Column(name = "repeat_time")
   private Long repeatTime;
 
@@ -71,6 +68,9 @@ public class ScheduleInfo extends BaseEntity {
   @Column(name = "data_map")
   private String dataMap = "{}";
 
-  @Column(name = "execute_last_time")
-  private LocalDateTime executeLastTime;
+  @Column(name = "lst_execute_at")
+  private LocalDateTime lstExecuteAt;
+
+  @Column(name = "is_log")
+  private Boolean isLog;
 }

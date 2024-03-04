@@ -34,7 +34,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vn.com.atomi.loyalty.base.exception.CustomAccessDeniedHandler;
 import vn.com.atomi.loyalty.base.exception.CustomAuthenticationEntryPoint;
-import vn.com.atomi.loyalty.common.security.AuthenticationFilter;
+import vn.com.atomi.loyalty.base.security.AuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity

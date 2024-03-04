@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.atomi.loyalty.base.data.BaseService;
+import vn.com.atomi.loyalty.base.redis.TokenBlackList;
+import vn.com.atomi.loyalty.base.redis.TokenBlackListRepository;
+import vn.com.atomi.loyalty.base.security.TokenProvider;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
-import vn.com.atomi.loyalty.common.entity.redis.TokenBlackList;
-import vn.com.atomi.loyalty.common.repository.redis.TokenBlackListRepository;
-import vn.com.atomi.loyalty.common.security.TokenProvider;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
 
 @Service

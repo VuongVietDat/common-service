@@ -41,34 +41,41 @@ public class HandleRetriesMessageJob extends QuartzJobBean {
 
   @Override
   protected void executeInternal(JobExecutionContext context) {
-    ThreadContext.put(RequestConstant.REQUEST_ID, Utils.generateUniqueId());
+    String executeId = Utils.generateUniqueId();
+    ThreadContext.put(RequestConstant.REQUEST_ID, executeId);
     JobKey jobKey = context.getJobDetail().getKey();
     ScheduleInfo scheduleInfo =
         scheduleRepository
             .findByJobNameAndJobGroupAndDeletedFalse(jobKey.getName(), jobKey.getGroup())
             .orElseThrow(() -> new BaseException(ErrorCode.JOB_NOT_EXISTED));
-    ScheduleLog scheduleLog =
-        ScheduleLog.builder()
-            .jobId(scheduleInfo.getId())
-            .status(StatusJob.STARTED)
-            .startTime(LocalDateTime.now())
-            .build();
-    scheduleLog = scheduleLogRepository.save(scheduleLog);
-
+    ScheduleLog scheduleLog = null;
+    StatusJob status = null;
+    String msg = null;
+    if (scheduleInfo.getIsLog()) {
+      scheduleLog =
+          ScheduleLog.builder()
+              .executeId(executeId)
+              .jobId(scheduleInfo.getId())
+              .status(StatusJob.STARTED)
+              .startTime(LocalDateTime.now())
+              .build();
+      scheduleLog = scheduleLogRepository.save(scheduleLog);
+    }
     try {
       retriesMessageRepository
           .findByRetriesActivated(LocalDateTime.now())
           .forEach(messageInterceptor::convertAndSend);
+      status = StatusJob.SUCCESS;
     } catch (Exception e) {
-      scheduleLog.setStatus(StatusJob.FAILED);
-      scheduleLog.setExceptionInfo(e.getMessage());
+      msg = e.getMessage();
+      status = StatusJob.FAILED;
       LOGGER.error(e.getMessage(), e);
     } finally {
-      scheduleLog.setEndTime(LocalDateTime.now());
-      scheduleLogRepository.save(scheduleLog);
-      scheduleInfo.setJobStatus(StatusJob.STARTED);
-      scheduleInfo.setExecuteLastTime(LocalDateTime.now());
-      scheduleRepository.save(scheduleInfo);
+      if (scheduleLog != null) {
+        scheduleLogRepository.updateLogEndJob(
+            LocalDateTime.now(), msg, status, scheduleLog.getId());
+      }
+      scheduleRepository.updateLstExecuteAt(LocalDateTime.now(), scheduleInfo.getId());
     }
   }
 }
