@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.UUID;
 import org.apache.logging.log4j.ThreadContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +31,8 @@ import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponseUtils;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
+import vn.com.atomi.loyalty.base.redis.TokenBlackListRepository;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
-import vn.com.atomi.loyalty.base.utils.Snowflake;
-import vn.com.atomi.loyalty.common.repository.redis.TokenBlackListRepository;
 
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
@@ -53,8 +53,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     try {
       var requestId = request.getHeader(RequestConstant.REQUEST_ID);
       ThreadContext.put(
-          RequestConstant.REQUEST_ID,
-          requestId == null ? String.valueOf(Snowflake.getInstance().nextId()) : requestId);
+          RequestConstant.REQUEST_ID, requestId == null ? UUID.randomUUID().toString() : requestId);
       ThreadContext.put(RequestConstant.SERVICE_NAME, serviceName);
       ThreadContext.put(RequestConstant.CLIENT_IP, RequestUtils.extractClientIpAddress(request));
       ThreadContext.put(RequestConstant.LOCAL_IP, request.getLocalAddr());

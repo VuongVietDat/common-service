@@ -2,13 +2,13 @@ package vn.com.atomi.loyalty.base.security;
 
 import io.jsonwebtoken.*;
 import java.util.Date;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
-import vn.com.atomi.loyalty.base.utils.Snowflake;
 
 @Component
 public class TokenProvider {
@@ -27,7 +27,7 @@ public class TokenProvider {
         .setExpiration(expiration)
         .addClaims(claims)
         .signWith(SignatureAlgorithm.HS256, secretKey)
-        .setId(String.valueOf(Snowflake.getInstance().nextId()))
+        .setId(UUID.randomUUID().toString())
         .compact();
   }
 

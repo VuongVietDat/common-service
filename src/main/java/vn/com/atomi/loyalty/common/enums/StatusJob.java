@@ -7,5 +7,6 @@ package vn.com.atomi.loyalty.common.enums;
 public enum StatusJob {
   STARTED,
   FAILED,
+  SUCCESS,
   STOPPED
 }

@@ -1,6 +1,6 @@
 package vn.com.atomi.loyalty.common.utils;
 
-import vn.com.atomi.loyalty.base.utils.Snowflake;
+import java.util.UUID;
 
 /**
  * @author haidv
@@ -13,7 +13,7 @@ public class Utils {
   }
 
   public static String generateUniqueId() {
-    return String.valueOf(Snowflake.getInstance().nextId());
+    return UUID.randomUUID().toString();
   }
 
   public static String makeLikeParameter(String param) {

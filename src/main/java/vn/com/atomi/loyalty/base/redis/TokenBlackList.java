@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.common.entity.redis;
+package vn.com.atomi.loyalty.base.redis;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

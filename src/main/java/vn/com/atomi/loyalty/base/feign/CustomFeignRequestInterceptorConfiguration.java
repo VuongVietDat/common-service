@@ -6,12 +6,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
-import vn.com.atomi.loyalty.base.utils.Snowflake;
 
 /**
  * @author haidv
@@ -27,7 +27,7 @@ public class CustomFeignRequestInterceptorConfiguration implements RequestInterc
   public void apply(RequestTemplate template) {
     String requestID;
     if (template.headers().get(RequestConstant.REQUEST_ID).isEmpty()) {
-      requestID = String.valueOf(Snowflake.getInstance().nextId());
+      requestID = UUID.randomUUID().toString();
       template.header(RequestConstant.REQUEST_ID, requestID);
     } else {
       requestID = (String) template.headers().get(RequestConstant.REQUEST_ID).toArray()[0];
