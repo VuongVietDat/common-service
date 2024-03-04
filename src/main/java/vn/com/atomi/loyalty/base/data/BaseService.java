@@ -7,8 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
+import vn.com.atomi.loyalty.base.security.UserPrincipal;
 import vn.com.atomi.loyalty.common.mapper.ModelMapper;
-import vn.com.atomi.loyalty.common.security.UserPrincipal;
 
 /**
  * This is the super interface for the service class of applications. <br>

@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.common.security;
+package vn.com.atomi.loyalty.base.security;
 
 import java.util.Collection;
 import lombok.Getter;
