@@ -23,6 +23,9 @@ import vn.com.atomi.loyalty.base.redis.TokenBlackListRepository;
 import vn.com.atomi.loyalty.base.security.TokenProvider;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
+import vn.com.atomi.loyalty.common.entity.Session;
+import vn.com.atomi.loyalty.common.entity.User;
+import vn.com.atomi.loyalty.common.repository.SessionRepository;
 import vn.com.atomi.loyalty.common.repository.UserRepository;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
 
@@ -33,6 +36,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
   private final UserRepository userRepository;
+  private final SessionRepository sessionRepository;
   private final RedissonClient redisson;
 
   private final TokenProvider tokenProvider;
@@ -76,7 +80,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   @Transactional
   @Override
   public LoginOutput login(LoginInput input) {
-    validLogin(input);
+    val user = validLogin(input);
 
     LoginOutput output = new LoginOutput();
     var startAt = LocalDateTime.now();
@@ -90,6 +94,14 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     output.setAccessExpireIn(tokenLifespan.getSeconds());
     output.setRefreshToken(sessionId);
     output.setRefreshExpireIn(sessionLifespan.getSeconds());
+
+    sessionRepository.save(
+        Session.builder()
+            .userId(user.getId())
+            .refreshToken(sessionId)
+            .expireIn(sessionLifespan.getSeconds())
+            .build());
+
     return output;
   }
 
@@ -100,7 +112,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
             refreshToken, LocalDateTime.now().plusSeconds(sessionLifespan.getSeconds())));
   }
 
-  private void validLogin(LoginInput input) {
+  private User validLogin(LoginInput input) {
     val user = userRepository.findByUsernameAndDeletedFalse(input.getUsername());
     if (user == null) throw new BaseException(CommonErrorCode.USER_NOT_EXIST);
 
@@ -119,5 +131,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     }
 
     redisAuthFailureCount.remove(user.getId());
+
+    return user;
   }
 }
