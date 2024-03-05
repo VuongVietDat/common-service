@@ -56,6 +56,12 @@ public enum CommonErrorCode implements AbstractError {
       17, "The refresh token expired, requires login again!", HttpStatus.UNAUTHORIZED),
   EXECUTE_THIRTY_SERVICE_ERROR(
       18, "An error occurred while executing the 3rd party api!", HttpStatus.INTERNAL_SERVER_ERROR),
+  USER_LOCKED(
+      19, "User is locked because over 5 time login failure", HttpStatus.UNAUTHORIZED),
+  USER_NOT_EXIST(
+      20, "User is not exist", HttpStatus.UNAUTHORIZED),
+  PASSWORD_INCORRECT(
+      21, "Wrong password", HttpStatus.UNAUTHORIZED),
   ;
 
   private final int code;

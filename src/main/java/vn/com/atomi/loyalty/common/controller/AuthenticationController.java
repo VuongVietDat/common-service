@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.common.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class AuthenticationController {
 
   @Operation(summary = "Tạo token xác thực")
   @PostMapping("/public/auth/token")
-  public ResponseEntity<ResponseData<LoginOutput>> login(@RequestBody LoginInput loginInput) {
+  public ResponseEntity<ResponseData<LoginOutput>> login(@RequestBody @Valid LoginInput loginInput) {
     return ResponseUtils.success(authenticationService.login(loginInput));
   }
 
