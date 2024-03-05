@@ -76,22 +76,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   @Transactional
   @Override
   public LoginOutput login(LoginInput input) {
-    val user = userRepository.findByUsernameAndDeletedFalse(input.getUsername());
-    if (user == null) throw new BaseException(CommonErrorCode.USER_NOT_EXIST);
-
-    Integer count = null;
-    if (bruteForceDetection) {
-      count = redisAuthFailureCount.get(user.getId());
-      if (count != null && count >= maxLoginFailed) {
-        throw new BaseException(CommonErrorCode.USER_LOCKED);
-      }
-    }
-
-    if (!encoder.matches(input.getPassword(), user.getPassword())) {
-      if (bruteForceDetection)
-        redisAuthFailureCount.put(user.getId(), count == null ? 1 : count + 1);
-      throw new BaseException(CommonErrorCode.PASSWORD_INCORRECT);
-    }
+    validLogin(input);
 
     LoginOutput output = new LoginOutput();
     var startAt = LocalDateTime.now();
@@ -113,5 +98,26 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     tokenBlackListRepository.put(
         new TokenBlackList(
             refreshToken, LocalDateTime.now().plusSeconds(sessionLifespan.getSeconds())));
+  }
+
+  private void validLogin(LoginInput input) {
+    val user = userRepository.findByUsernameAndDeletedFalse(input.getUsername());
+    if (user == null) throw new BaseException(CommonErrorCode.USER_NOT_EXIST);
+
+    Integer count = null;
+    if (bruteForceDetection) {
+      count = redisAuthFailureCount.get(user.getId());
+      if (count != null && count >= maxLoginFailed) {
+        throw new BaseException(CommonErrorCode.USER_LOCKED);
+      }
+    }
+
+    if (!encoder.matches(input.getPassword(), user.getPassword())) {
+      if (bruteForceDetection)
+        redisAuthFailureCount.put(user.getId(), count == null ? 1 : count + 1);
+      throw new BaseException(CommonErrorCode.PASSWORD_INCORRECT);
+    }
+
+    redisAuthFailureCount.remove(user.getId());
   }
 }
