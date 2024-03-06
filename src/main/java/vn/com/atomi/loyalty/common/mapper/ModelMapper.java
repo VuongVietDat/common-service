@@ -1,8 +1,11 @@
 package vn.com.atomi.loyalty.common.mapper;
 
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import vn.com.atomi.loyalty.common.dto.output.DictionaryOutput;
 import vn.com.atomi.loyalty.common.dto.output.UserOutput;
+import vn.com.atomi.loyalty.common.entity.Dictionary;
 import vn.com.atomi.loyalty.common.entity.RetriesMessage;
 import vn.com.atomi.loyalty.common.entity.User;
 import vn.com.atomi.loyalty.common.event.RetriesMessageData;
@@ -18,4 +21,6 @@ public interface ModelMapper {
   RetriesMessage convertToRetriesMessage(RetriesMessageData retriesMessageData);
 
   UserOutput toUserOutput(User user);
+
+  List<DictionaryOutput> convertToDictionaryOutputs(List<Dictionary> dictionaries);
 }
