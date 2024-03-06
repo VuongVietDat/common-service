@@ -23,9 +23,14 @@ public class CustomFeignRequestInterceptorConfiguration implements RequestInterc
   @Value("${spring.application.name}")
   private String serviceName;
 
+  @Value("${custom.properties.internal-api.credentials}")
+  private String internalCredentials;
+
   @Override
   public void apply(RequestTemplate template) {
     String requestID;
+    template.header(
+        RequestConstant.AUTHORIZATION, RequestConstant.SECURE_PREFIX + internalCredentials);
     if (template.headers().get(RequestConstant.REQUEST_ID).isEmpty()) {
       requestID = UUID.randomUUID().toString();
       template.header(RequestConstant.REQUEST_ID, requestID);

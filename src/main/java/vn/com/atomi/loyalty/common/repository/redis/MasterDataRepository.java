@@ -17,12 +17,11 @@ import vn.com.atomi.loyalty.common.dto.output.DictionaryOutput;
 @RequiredArgsConstructor
 public class MasterDataRepository {
 
+  private static final String KEY_DICTIONARY_ALL = "LOYALTY_DICTIONARY_ALL";
   private final RedisTemplate<String, Object> redisTemplate;
 
-  private static final String KEY_DICTIONARY_ACTIVE = "LOYALTY_DICTIONARY_ACTIVE";
-
   public List<DictionaryOutput> getDictionary() {
-    var opt = (String) this.redisTemplate.opsForValue().get(KEY_DICTIONARY_ACTIVE);
+    var opt = (String) this.redisTemplate.opsForValue().get(KEY_DICTIONARY_ALL);
     return opt == null
         ? new ArrayList<>()
         : JsonUtils.fromJson(opt, List.class, DictionaryOutput.class);
@@ -31,6 +30,6 @@ public class MasterDataRepository {
   public void putDictionary(List<DictionaryOutput> dictionaryOutputs) {
     redisTemplate
         .opsForValue()
-        .set(KEY_DICTIONARY_ACTIVE, JsonUtils.toJson(dictionaryOutputs), Duration.ofHours(12));
+        .set(KEY_DICTIONARY_ALL, JsonUtils.toJson(dictionaryOutputs), Duration.ofHours(12));
   }
 }

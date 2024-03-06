@@ -33,6 +33,8 @@ public class RequestConstant {
 
   public static final String BASIC_PREFIX = "Basic ";
 
+  public static final String SECURE_PREFIX = "SecureKey ";
+
   public static final String SESSION_ID = "sessionId";
 
   public static final String DEVICE_ID = "X-Device-ID";
@@ -46,6 +48,10 @@ public class RequestConstant {
   public static final String BROWSER_NAME = "X-Browser-Name";
 
   public static final String APPLICATION_VERSION = "X-Application-Version";
+
+  public static final String SYSTEM = "SYSTEM";
+
+  public static final String ROLE_SYSTEM = "ROLE_SYSTEM";
 
   public static final List<String> WHITE_LIST_REQUEST =
       Arrays.asList(

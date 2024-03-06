@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.logging.log4j.ThreadContext;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -45,6 +47,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
   @Value("${spring.application.name}")
   private String serviceName;
+
+  @Value("${custom.properties.internal-api.credentials}")
+  private String internalCredentials;
 
   @Override
   protected void doFilterInternal(
@@ -76,11 +81,27 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         var claims =
             tokenProvider.getClaimsFromToken(jwt.substring(RequestConstant.BEARER_PREFIX.length()));
         ThreadContext.put(RequestConstant.SESSION_ID, claims.getSubject());
-        UserPrincipal userDetails;
         if (tokenBlackListRepository.find(claims.getSubject()).isPresent()) {
           throw new BaseException(CommonErrorCode.REFRESH_TOKEN_EXPIRED);
         }
-        userDetails = new UserPrincipal(claims.getSubject(), claims.getIssuer(), new ArrayList<>());
+        var userDetails =
+            new UserPrincipal(claims.getSubject(), claims.getIssuer(), new ArrayList<>());
+        var authentication =
+            new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+      }
+      var secureKey = getInternalSecureKeyFromRequest(request);
+      if (StringUtils.hasText(secureKey)
+          && secureKey
+              .substring(RequestConstant.SECURE_PREFIX.length())
+              .equals(internalCredentials)) {
+        var userDetails =
+            new UserPrincipal(
+                UUID.randomUUID().toString(),
+                RequestConstant.SYSTEM,
+                List.of(new SimpleGrantedAuthority(RequestConstant.ROLE_SYSTEM)));
         var authentication =
             new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
@@ -111,6 +132,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     var bearerToken = request.getHeader(RequestConstant.AUTHORIZATION);
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(RequestConstant.BEARER_PREFIX)) {
       return bearerToken;
+    }
+    return null;
+  }
+
+  private String getInternalSecureKeyFromRequest(HttpServletRequest request) {
+    var secureKey = request.getHeader(RequestConstant.AUTHORIZATION);
+    if (StringUtils.hasText(secureKey) && secureKey.startsWith(RequestConstant.SECURE_PREFIX)) {
+      return secureKey;
     }
     return null;
   }
