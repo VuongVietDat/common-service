@@ -8,6 +8,7 @@ import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.context.SecurityContextHolder;
+import vn.com.atomi.loyalty.base.constant.RequestConstant;
 
 /**
  * @author haidv
@@ -43,10 +44,10 @@ public class PersistenceConfig {
       try {
         var userId = SecurityContextHolder.getContext().getAuthentication().getName();
         return userId == null || userId.equals("anonymousUser")
-            ? Optional.of("system")
+            ? Optional.of(RequestConstant.SYSTEM)
             : Optional.of(userId);
       } catch (Exception e) {
-        return Optional.of("system");
+        return Optional.of(RequestConstant.SYSTEM);
       }
     }
   }
