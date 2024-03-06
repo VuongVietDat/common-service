@@ -1,7 +1,6 @@
 package vn.com.atomi.loyalty.common.entity;
 
 import jakarta.persistence.*;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,11 +24,4 @@ public class User extends BaseEntity {
 
   private String password;
   private String displayName;
-
-  @ManyToMany(cascade = CascadeType.ALL)
-  @JoinTable(
-      name = "cm_user_role",
-      joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private Set<Role> roles;
 }

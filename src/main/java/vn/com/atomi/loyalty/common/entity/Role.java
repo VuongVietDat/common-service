@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
 
-import java.util.Set;
-
 @Entity
 @Data
 @Builder
@@ -23,7 +21,4 @@ public class Role extends BaseEntity {
 
   @Column(unique = true)
   private String name;
-
-  @ManyToMany(mappedBy = "roles")
-  private Set<User> users;
 }

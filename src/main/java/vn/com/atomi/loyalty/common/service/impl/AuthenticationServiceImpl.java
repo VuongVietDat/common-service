@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,11 +23,15 @@ import vn.com.atomi.loyalty.base.security.TokenProvider;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
+import vn.com.atomi.loyalty.common.dto.output.RoleOutput;
 import vn.com.atomi.loyalty.common.dto.output.UserOutput;
 import vn.com.atomi.loyalty.common.entity.Session;
 import vn.com.atomi.loyalty.common.entity.User;
+import vn.com.atomi.loyalty.common.entity.UserRole;
+import vn.com.atomi.loyalty.common.repository.RoleRepository;
 import vn.com.atomi.loyalty.common.repository.SessionRepository;
 import vn.com.atomi.loyalty.common.repository.UserRepository;
+import vn.com.atomi.loyalty.common.repository.UserRoleRepository;
 import vn.com.atomi.loyalty.common.repository.redis.LoginFailureCountRepository;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
 import vn.com.atomi.loyalty.common.utils.Utils;
@@ -38,6 +43,8 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
   private final UserRepository userRepository;
+  private final UserRoleRepository userRoleRepository;
+  private final RoleRepository roleRepository;
   private final SessionRepository sessionRepository;
   private final LoginFailureCountRepository redisAuthFailureCount;
 
@@ -130,7 +137,18 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
             .findByIdAndDeletedFalse(session.getUserId())
             .orElseThrow(() -> new BaseException(CommonErrorCode.USER_NOT_EXIST));
 
-    return modelMapper.toUserOutput(user);
+    val userOutput = modelMapper.toUserOutput(user);
+
+    val userRoles = userRoleRepository.findByUserIdAndDeletedFalse(user.getId());
+
+    val roles =
+        roleRepository.findAllById(userRoles.stream().map(UserRole::getRoleId).toList()).stream()
+            .map(role -> new RoleOutput(role.getId(), role.getName()))
+            .toList();
+
+    userOutput.setRoles(new HashSet<>(roles));
+
+    return userOutput;
   }
 
   private User validLogin(LoginInput input) {

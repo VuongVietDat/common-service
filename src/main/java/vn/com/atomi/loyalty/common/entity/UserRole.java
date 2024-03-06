@@ -16,11 +16,7 @@ public class UserRole extends BaseEntity {
       allocationSize = 1)
   private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "user_id")
-  private User user;
+  private Long userId;
 
-  @ManyToOne
-  @JoinColumn(name = "role_id")
-  private Role role;
+  private Long roleId;
 }
