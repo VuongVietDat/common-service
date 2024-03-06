@@ -22,6 +22,7 @@ import vn.com.atomi.loyalty.base.security.TokenProvider;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
+import vn.com.atomi.loyalty.common.dto.output.UserOutput;
 import vn.com.atomi.loyalty.common.entity.Session;
 import vn.com.atomi.loyalty.common.entity.User;
 import vn.com.atomi.loyalty.common.repository.SessionRepository;
@@ -119,6 +120,17 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     tokenBlackListRepository.put(
         new TokenBlackList(
             refreshToken, LocalDateTime.now().plusSeconds(sessionLifespan.getSeconds())));
+  }
+
+  @Override
+  public UserOutput getUser(String token) {
+    val session = validSession(token);
+    val user =
+        userRepository
+            .findByIdAndDeletedFalse(session.getUserId())
+            .orElseThrow(() -> new BaseException(CommonErrorCode.USER_NOT_EXIST));
+
+    return modelMapper.toUserOutput(user);
   }
 
   private User validLogin(LoginInput input) {

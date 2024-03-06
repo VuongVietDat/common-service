@@ -11,6 +11,7 @@ import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponseUtils;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
+import vn.com.atomi.loyalty.common.dto.output.UserOutput;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
 
 /**
@@ -25,7 +26,8 @@ public class AuthenticationController {
 
   @Operation(summary = "Tạo token xác thực")
   @PostMapping("/public/auth/token")
-  public ResponseEntity<ResponseData<LoginOutput>> login(@RequestBody @Valid LoginInput loginInput) {
+  public ResponseEntity<ResponseData<LoginOutput>> login(
+      @RequestBody @Valid LoginInput loginInput) {
     return ResponseUtils.success(authenticationService.login(loginInput));
   }
 
@@ -43,5 +45,12 @@ public class AuthenticationController {
       HttpServletRequest servletRequest) {
     authenticationService.logout(token);
     return ResponseUtils.success();
+  }
+
+  @Operation(summary = "Lấy thông tin người dùng")
+  @GetMapping("/public/auth/user")
+  public ResponseEntity<ResponseData<UserOutput>> getUser(
+      @Parameter(description = "refresh token") @RequestParam String token) {
+    return ResponseUtils.success(authenticationService.getUser(token));
   }
 }
