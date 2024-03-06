@@ -107,10 +107,13 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   }
 
   private User validLogin(LoginInput input) {
-    val optional = userRepository.findByUsernameAndDeletedFalse(input.getUsername());
-    if (optional.isEmpty()) throw new BaseException(CommonErrorCode.USER_NOT_EXIST);
-    val user = optional.get();
+    // Check user exist
+    val user =
+        userRepository
+            .findByUsernameAndDeletedFalse(input.getUsername())
+            .orElseThrow(() -> new BaseException(CommonErrorCode.USER_NOT_EXIST));
 
+    // count login failure
     Integer count = null;
     if (bruteForceDetection) {
       val countOptional = redisAuthFailureCount.get(user.getId());
@@ -122,25 +125,30 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
       }
     }
 
+    // check password
     if (!encoder.matches(input.getPassword(), user.getPassword())) {
       if (bruteForceDetection)
         redisAuthFailureCount.put(user.getId(), count == null ? 1 : count + 1);
       throw new BaseException(CommonErrorCode.PASSWORD_INCORRECT);
     }
 
+    // login success clear counter
     redisAuthFailureCount.remove(user.getId());
 
     return user;
   }
 
   private Session validSession(String refreshToken) {
+    // check logout
     if (tokenBlackListRepository.find(refreshToken).isPresent())
       throw new BaseException(CommonErrorCode.REFRESH_TOKEN_EXPIRED);
 
-    val optional = sessionRepository.findByRefreshToken(refreshToken);
-    if (optional.isEmpty()) throw new BaseException(CommonErrorCode.REFRESH_TOKEN_INVALID);
-    val session = optional.get();
-
+    //check session exist
+    val session =
+        sessionRepository
+            .findByRefreshToken(refreshToken)
+            .orElseThrow(() -> new BaseException(CommonErrorCode.REFRESH_TOKEN_INVALID));
+    //check session expired
     if (LocalDateTime.now().isAfter(session.getExpire()))
       throw new BaseException(CommonErrorCode.REFRESH_TOKEN_EXPIRED);
 
