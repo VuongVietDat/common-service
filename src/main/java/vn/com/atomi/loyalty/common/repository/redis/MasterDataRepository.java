@@ -8,7 +8,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
 import vn.com.atomi.loyalty.common.dto.output.DictionaryOutput;
-import vn.com.atomi.loyalty.common.entity.Dictionary;
 
 /**
  * @author haidv
@@ -20,12 +19,10 @@ public class MasterDataRepository {
 
   private final RedisTemplate<String, Object> redisTemplate;
 
+  private static final String KEY_DICTIONARY_ACTIVE = "LOYALTY_DICTIONARY_ACTIVE";
+
   public List<DictionaryOutput> getDictionary() {
-    var opt =
-        (String)
-            this.redisTemplate
-                .opsForValue()
-                .get(String.format("LOYALTY_%s", Dictionary.class.getSimpleName().toUpperCase()));
+    var opt = (String) this.redisTemplate.opsForValue().get(KEY_DICTIONARY_ACTIVE);
     return opt == null
         ? new ArrayList<>()
         : JsonUtils.fromJson(opt, List.class, DictionaryOutput.class);
@@ -34,9 +31,6 @@ public class MasterDataRepository {
   public void putDictionary(List<DictionaryOutput> dictionaryOutputs) {
     redisTemplate
         .opsForValue()
-        .set(
-            String.format("LOYALTY_%s", Dictionary.class.getSimpleName().toUpperCase()),
-            JsonUtils.toJson(dictionaryOutputs),
-            Duration.ofHours(12));
+        .set(KEY_DICTIONARY_ACTIVE, JsonUtils.toJson(dictionaryOutputs), Duration.ofHours(12));
   }
 }
