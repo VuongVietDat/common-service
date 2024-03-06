@@ -24,6 +24,8 @@ public class ResponseData<T> implements Serializable {
 
   private final String service;
 
+  private final String sessionId;
+
   private final String requestId;
 
   private int code;
@@ -40,6 +42,7 @@ public class ResponseData<T> implements Serializable {
     this.message = "Successful!";
     this.service = RequestUtils.extractServiceName();
     this.requestId = RequestUtils.extractRequestId();
+    this.sessionId = RequestUtils.extractSessionId();
   }
 
   public ResponseData<T> success(T data) {

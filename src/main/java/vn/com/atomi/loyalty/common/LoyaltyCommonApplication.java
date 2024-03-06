@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import vn.com.atomi.loyalty.base.config.PersistenceConfig;
-import vn.com.atomi.loyalty.base.utils.Snowflake;
 
 @ComponentScan(basePackages = "vn.com.atomi.loyalty")
 @SpringBootApplication
@@ -29,6 +28,5 @@ public class LoyaltyCommonApplication {
   @PostConstruct
   public void init() {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC+7"));
-    Snowflake.getInstance();
   }
 }

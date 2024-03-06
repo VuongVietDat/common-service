@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LoginInput {
 
-  private String clientId;
+  private String username;
 
-  private String clientSecret;
+  private String password;
 }

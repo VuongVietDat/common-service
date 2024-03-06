@@ -5,6 +5,7 @@ import org.apache.logging.log4j.ThreadContext;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -33,11 +34,11 @@ public class RetriesMessageListener {
 
   private final HistoryKafkaMessageRepository historyKafkaMessageRepository;
 
-  //  @KafkaListener(
-  //      topics = "${custom.properties.kafka.topic.retries-event.name}",
-  //      groupId = "${custom.properties.messaging.kafka.groupid}",
-  //      concurrency = "1",
-  //      containerFactory = "kafkaListenerContainerFactory")
+  @KafkaListener(
+      topics = "${custom.properties.kafka.topic.retries-event.name}",
+      groupId = "${custom.properties.messaging.kafka.groupId}",
+      concurrency = "1",
+      containerFactory = "kafkaListenerContainerFactory")
   public void retriesEventListener(
       String data,
       @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
