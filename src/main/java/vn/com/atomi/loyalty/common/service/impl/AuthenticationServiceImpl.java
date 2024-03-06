@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
 import vn.com.atomi.loyalty.base.redis.TokenBlackList;
 import vn.com.atomi.loyalty.base.redis.TokenBlackListRepository;
 import vn.com.atomi.loyalty.base.security.TokenProvider;
+import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
 import vn.com.atomi.loyalty.common.entity.Session;
@@ -26,6 +28,7 @@ import vn.com.atomi.loyalty.common.repository.SessionRepository;
 import vn.com.atomi.loyalty.common.repository.UserRepository;
 import vn.com.atomi.loyalty.common.repository.redis.LoginFailureCountRepository;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
+import vn.com.atomi.loyalty.common.utils.Utils;
 
 @Slf4j
 @Service
@@ -89,12 +92,24 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     output.setRefreshToken(sessionId);
     output.setRefreshExpireIn(sessionLifespan.getSeconds());
 
-    sessionRepository.save(
+    // save Session
+    val builder =
         Session.builder()
             .userId(user.getId())
             .refreshToken(sessionId)
-            .expire(LocalDateTime.now().plusSeconds(sessionLifespan.getSeconds()))
-            .build());
+            .expire(LocalDateTime.now().plusSeconds(sessionLifespan.getSeconds()));
+    Utils.getCurrentRequest()
+        .ifPresent(
+            request ->
+                builder
+                    .clientIp(RequestUtils.extractClientIpAddress(request))
+                    .clientTime(request.getHeader(RequestConstant.CLIENT_TIME))
+                    .clientPlatform(request.getHeader(RequestConstant.CLIENT_PLATFORM))
+                    .deviceId(request.getHeader(RequestConstant.DEVICE_ID))
+                    .deviceName(request.getHeader(RequestConstant.DEVICE_NAME))
+                    .deviceType(request.getHeader(RequestConstant.DEVICE_TYPE))
+                    .appVersion(request.getHeader(RequestConstant.APPLICATION_VERSION)));
+    sessionRepository.save(builder.build());
 
     return output;
   }
@@ -143,12 +158,12 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     if (tokenBlackListRepository.find(refreshToken).isPresent())
       throw new BaseException(CommonErrorCode.REFRESH_TOKEN_EXPIRED);
 
-    //check session exist
+    // check session exist
     val session =
         sessionRepository
             .findByRefreshToken(refreshToken)
             .orElseThrow(() -> new BaseException(CommonErrorCode.REFRESH_TOKEN_INVALID));
-    //check session expired
+    // check session expired
     if (LocalDateTime.now().isAfter(session.getExpire()))
       throw new BaseException(CommonErrorCode.REFRESH_TOKEN_EXPIRED);
 

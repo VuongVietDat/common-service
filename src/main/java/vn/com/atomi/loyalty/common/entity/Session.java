@@ -1,10 +1,9 @@
 package vn.com.atomi.loyalty.common.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
-
-import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -27,4 +26,12 @@ public class Session extends BaseEntity {
   private String refreshToken;
 
   private LocalDateTime expire;
+
+  private String clientIp;
+  private String clientTime;
+  private String clientPlatform;
+  private String deviceId;
+  private String deviceName;
+  private String deviceType;
+  private String appVersion;
 }
