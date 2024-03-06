@@ -15,7 +15,11 @@ import java.time.LocalDateTime;
 @Table(name = "cm_session")
 public class Session extends BaseEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cm_session_id_seq")
+  @SequenceGenerator(
+      name = "cm_session_id_seq",
+      sequenceName = "cm_session_id_seq",
+      allocationSize = 1)
   private Long id;
 
   private Long userId;

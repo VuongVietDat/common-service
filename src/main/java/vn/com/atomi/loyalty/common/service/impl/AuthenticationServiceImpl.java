@@ -1,6 +1,5 @@
 package vn.com.atomi.loyalty.common.service.impl;
 
-import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -9,8 +8,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.redisson.api.RMapCache;
-import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +24,7 @@ import vn.com.atomi.loyalty.common.entity.Session;
 import vn.com.atomi.loyalty.common.entity.User;
 import vn.com.atomi.loyalty.common.repository.SessionRepository;
 import vn.com.atomi.loyalty.common.repository.UserRepository;
+import vn.com.atomi.loyalty.common.repository.redis.LoginFailureCountRepository;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
 
 @Slf4j
@@ -37,7 +35,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
 
   private final UserRepository userRepository;
   private final SessionRepository sessionRepository;
-  private final RedissonClient redisson;
+  private final LoginFailureCountRepository redisAuthFailureCount;
 
   private final TokenProvider tokenProvider;
 
@@ -54,13 +52,6 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
 
   @Value("${custom.properties.security.token-lifespan}")
   private Duration tokenLifespan;
-
-  private RMapCache<Long, Integer> redisAuthFailureCount;
-
-  @PostConstruct
-  void onPost() {
-    redisAuthFailureCount = redisson.getMapCache("Auth_Failure_Count");
-  }
 
   @Transactional
   @Override
@@ -122,9 +113,12 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
 
     Integer count = null;
     if (bruteForceDetection) {
-      count = redisAuthFailureCount.get(user.getId());
-      if (count != null && count >= maxLoginFailed) {
-        throw new BaseException(CommonErrorCode.USER_LOCKED);
+      val countOptional = redisAuthFailureCount.get(user.getId());
+      if (countOptional.isPresent()) {
+        count = countOptional.get();
+        if (countOptional.get() >= maxLoginFailed) {
+          throw new BaseException(CommonErrorCode.USER_LOCKED);
+        }
       }
     }
 
