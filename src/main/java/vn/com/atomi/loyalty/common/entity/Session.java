@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
 
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -21,5 +22,5 @@ public class Session extends BaseEntity {
 
   private String refreshToken;
 
-  private Long expireIn;
+  private LocalDateTime expire;
 }
