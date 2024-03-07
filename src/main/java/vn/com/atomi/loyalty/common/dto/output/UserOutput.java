@@ -8,6 +8,7 @@ public class UserOutput {
   private Long id;
 
   private String username;
+
   private String displayName;
 
   private Set<RoleOutput> roles;
