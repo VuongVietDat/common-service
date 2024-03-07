@@ -1,5 +1,7 @@
 package vn.com.atomi.loyalty.common.service.impl;
 
+import static vn.com.atomi.loyalty.common.enums.ErrorCode.*;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -135,7 +137,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     val user =
         userRepository
             .findByIdAndDeletedFalse(session.getUserId())
-            .orElseThrow(() -> new BaseException(CommonErrorCode.USER_NOT_EXIST));
+            .orElseThrow(() -> new BaseException(USER_NOT_EXIST));
 
     val userOutput = modelMapper.toUserOutput(user);
 
@@ -156,7 +158,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     val user =
         userRepository
             .findByUsernameAndDeletedFalse(input.getUsername())
-            .orElseThrow(() -> new BaseException(CommonErrorCode.USER_NOT_EXIST));
+            .orElseThrow(() -> new BaseException(USER_NOT_EXIST));
 
     // count login failure
     Integer count = null;
@@ -165,7 +167,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
       if (countOptional.isPresent()) {
         count = countOptional.get();
         if (countOptional.get() >= maxLoginFailed) {
-          throw new BaseException(CommonErrorCode.USER_LOCKED);
+          throw new BaseException(USER_LOCKED);
         }
       }
     }
@@ -174,7 +176,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     if (!encoder.matches(input.getPassword(), user.getPassword())) {
       if (bruteForceDetection)
         redisAuthFailureCount.put(user.getId(), count == null ? 1 : count + 1);
-      throw new BaseException(CommonErrorCode.PASSWORD_INCORRECT);
+      throw new BaseException(PASSWORD_INCORRECT);
     }
 
     // login success clear counter
