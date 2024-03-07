@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -25,15 +24,10 @@ import vn.com.atomi.loyalty.base.security.TokenProvider;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
-import vn.com.atomi.loyalty.common.dto.output.RoleOutput;
 import vn.com.atomi.loyalty.common.dto.output.UserOutput;
 import vn.com.atomi.loyalty.common.entity.Session;
 import vn.com.atomi.loyalty.common.entity.User;
-import vn.com.atomi.loyalty.common.entity.UserRole;
-import vn.com.atomi.loyalty.common.repository.RoleRepository;
-import vn.com.atomi.loyalty.common.repository.SessionRepository;
-import vn.com.atomi.loyalty.common.repository.UserRepository;
-import vn.com.atomi.loyalty.common.repository.UserRoleRepository;
+import vn.com.atomi.loyalty.common.repository.*;
 import vn.com.atomi.loyalty.common.repository.redis.CacheUserRepository;
 import vn.com.atomi.loyalty.common.repository.redis.LoginFailureCountRepository;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
@@ -46,6 +40,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
   private final UserRepository userRepository;
+  private final UserDetailRepository userDetailRepository;
   private final UserRoleRepository userRoleRepository;
   private final RoleRepository roleRepository;
   private final SessionRepository sessionRepository;
@@ -143,20 +138,10 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     if (cache.isPresent()) return cache.get();
 
     // load DB
-    val userOptional = userRepository.findByIdAndDeletedFalse(session.getUserId());
-    val user = userOptional.orElseThrow(() -> new BaseException(USER_NOT_EXIST));
-    val userOutput = modelMapper.toUserOutput(user);
-    val roleIds =
-        userRoleRepository.findByUserIdAndDeletedFalse(user.getId()).stream()
-            .map(UserRole::getRoleId)
-            .toList();
-    val roles =
-        roleRepository.findAllById(roleIds).stream()
-            .map(role -> new RoleOutput(role.getId(), role.getName()))
-            .collect(Collectors.toSet());
-    userOutput.setRoles(roles);
+    val userOptional = userDetailRepository.get(session.getUserId());
+    val userOutput = userOptional.orElseThrow(() -> new BaseException(USER_NOT_EXIST));
 
-    //save cache
+    // save cache
     cacheUserRepository.put(token, userOutput);
 
     return userOutput;
