@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import vn.com.atomi.loyalty.common.dao.UserRawInput;
+import vn.com.atomi.loyalty.common.dao.RoleRawInput;
 import vn.com.atomi.loyalty.common.dto.output.RoleOutput;
 import vn.com.atomi.loyalty.common.dto.output.UserOutput;
 
@@ -35,14 +35,13 @@ public class UserDetailRepository {
             id);
     if (mapList.isEmpty()) return Optional.empty();
 
-    val rawList =
-        mapList.stream().map(map -> mapper.convertValue(map, UserRawInput.class)).toList();
-
     val userOutput = mapper.convertValue(mapList.get(0), UserOutput.class);
-    userOutput.setRoles(
-        rawList.stream()
+    val roleSet =
+        mapList.stream()
+            .map(map -> mapper.convertValue(map, RoleRawInput.class))
             .map(raw -> new RoleOutput(raw.getRoleId(), raw.getName()))
-            .collect(Collectors.toSet()));
+            .collect(Collectors.toSet());
+    userOutput.setRoles(roleSet);
 
     return Optional.of(userOutput);
   }
