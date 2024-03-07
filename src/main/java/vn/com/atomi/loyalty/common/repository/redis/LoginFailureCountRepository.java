@@ -13,7 +13,7 @@ public class LoginFailureCountRepository {
   private final RedisTemplate<String, Object> redisTemplate;
 
   private String composeHeader(long key) {
-    return String.format("LoginFailureCount:%d", key);
+    return String.format("LOYALTY_LOGIN_FAILURE_COUNT:%d", key);
   }
 
   public void put(long userId, int count) {
@@ -24,7 +24,7 @@ public class LoginFailureCountRepository {
     return Optional.ofNullable((Integer) redisTemplate.opsForValue().get(composeHeader(userId)));
   }
 
-  public void remove(long userId){
+  public void remove(long userId) {
     redisTemplate.delete(composeHeader(userId));
   }
 }

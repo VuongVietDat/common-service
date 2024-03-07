@@ -18,14 +18,14 @@ public class CacheUserRepository {
   private Duration sessionLifespan;
 
   private String composeHeader(String key) {
-    return String.format("CacheUser:%s", key);
+    return String.format("LOYALTY_CACHE_USER:%s", key);
   }
 
-  public void put(String token, UserOutput user) {
-    redisTemplate.opsForValue().set(composeHeader(token), user, sessionLifespan);
+  public void put(String key, UserOutput user) {
+    redisTemplate.opsForValue().set(composeHeader(key), user, sessionLifespan);
   }
 
-  public Optional<UserOutput> get(String token) {
-    return Optional.ofNullable((UserOutput) redisTemplate.opsForValue().get(composeHeader(token)));
+  public Optional<UserOutput> get(String key) {
+    return Optional.ofNullable((UserOutput) redisTemplate.opsForValue().get(composeHeader(key)));
   }
 }
