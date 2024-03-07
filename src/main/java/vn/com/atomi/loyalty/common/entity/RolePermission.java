@@ -16,11 +16,7 @@ public class RolePermission extends BaseEntity {
       allocationSize = 1)
   private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "role_id")
-  private Role role;
+  private Long roleId;
 
-  @ManyToOne
-  @JoinColumn(name = "permission_id")
-  private Permission permission;
+  private Long permissionId;
 }
