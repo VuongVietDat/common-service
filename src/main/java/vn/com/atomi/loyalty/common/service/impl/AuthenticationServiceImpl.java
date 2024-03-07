@@ -6,8 +6,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -138,25 +138,25 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   public UserOutput getUser(String token) {
     val session = validSession(token);
 
+    // check has cache
     val cache = cacheUserRepository.get(token);
     if (cache.isPresent()) return cache.get();
 
-    val user =
-        userRepository
-            .findByIdAndDeletedFalse(session.getUserId())
-            .orElseThrow(() -> new BaseException(USER_NOT_EXIST));
-
+    // load DB
+    val userOptional = userRepository.findByIdAndDeletedFalse(session.getUserId());
+    val user = userOptional.orElseThrow(() -> new BaseException(USER_NOT_EXIST));
     val userOutput = modelMapper.toUserOutput(user);
-
-    val userRoles = userRoleRepository.findByUserIdAndDeletedFalse(user.getId());
-
-    val roles =
-        roleRepository.findAllById(userRoles.stream().map(UserRole::getRoleId).toList()).stream()
-            .map(role -> new RoleOutput(role.getId(), role.getName()))
+    val roleIds =
+        userRoleRepository.findByUserIdAndDeletedFalse(user.getId()).stream()
+            .map(UserRole::getRoleId)
             .toList();
+    val roles =
+        roleRepository.findAllById(roleIds).stream()
+            .map(role -> new RoleOutput(role.getId(), role.getName()))
+            .collect(Collectors.toSet());
+    userOutput.setRoles(roles);
 
-    userOutput.setRoles(new HashSet<>(roles));
-
+    //save cache
     cacheUserRepository.put(token, userOutput);
 
     return userOutput;
