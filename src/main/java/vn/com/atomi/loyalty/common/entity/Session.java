@@ -14,6 +14,7 @@ import vn.com.atomi.loyalty.base.data.BaseEntity;
 @Table(name = "cm_session")
 public class Session extends BaseEntity {
   @Id
+  @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cm_session_id_seq")
   @SequenceGenerator(
       name = "cm_session_id_seq",
@@ -21,17 +22,33 @@ public class Session extends BaseEntity {
       allocationSize = 1)
   private Long id;
 
+  @Column(name = "user_id")
   private Long userId;
 
+  @Column(name = "refresh_token")
   private String refreshToken;
 
+  @Column(name = "expire")
   private LocalDateTime expire;
 
+  @Column(name = "client_ip")
   private String clientIp;
+
+  @Column(name = "client_time")
   private String clientTime;
+
+  @Column(name = "client_platform")
   private String clientPlatform;
+
+  @Column(name = "device_id")
   private String deviceId;
+
+  @Column(name = "device_name")
   private String deviceName;
+
+  @Column(name = "device_type")
   private String deviceType;
+
+  @Column(name = "app_version")
   private String appVersion;
 }
