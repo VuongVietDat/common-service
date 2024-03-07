@@ -16,5 +16,5 @@ public interface AuthenticationService {
 
   void logout(String token);
 
-  UserOutput getUser(String token);
+  UserOutput getUser();
 }

@@ -1,7 +1,8 @@
 package vn.com.atomi.loyalty.common.dto.output;
 
-import java.util.Set;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class UserOutput {
@@ -12,4 +13,6 @@ public class UserOutput {
   private String displayName;
 
   private Set<RoleOutput> roles;
+
+  private Set<PermissionOutput> permissions;
 }
