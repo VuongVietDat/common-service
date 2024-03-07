@@ -34,6 +34,7 @@ import vn.com.atomi.loyalty.common.repository.RoleRepository;
 import vn.com.atomi.loyalty.common.repository.SessionRepository;
 import vn.com.atomi.loyalty.common.repository.UserRepository;
 import vn.com.atomi.loyalty.common.repository.UserRoleRepository;
+import vn.com.atomi.loyalty.common.repository.redis.CacheUserRepository;
 import vn.com.atomi.loyalty.common.repository.redis.LoginFailureCountRepository;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
 import vn.com.atomi.loyalty.common.utils.Utils;
@@ -48,7 +49,9 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   private final UserRoleRepository userRoleRepository;
   private final RoleRepository roleRepository;
   private final SessionRepository sessionRepository;
+
   private final LoginFailureCountRepository redisAuthFailureCount;
+  private final CacheUserRepository cacheUserRepository;
 
   private final TokenProvider tokenProvider;
 
@@ -134,6 +137,10 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   @Override
   public UserOutput getUser(String token) {
     val session = validSession(token);
+
+    val cache = cacheUserRepository.get(token);
+    if (cache.isPresent()) return cache.get();
+
     val user =
         userRepository
             .findByIdAndDeletedFalse(session.getUserId())
@@ -149,6 +156,8 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
             .toList();
 
     userOutput.setRoles(new HashSet<>(roles));
+
+    cacheUserRepository.put(token, userOutput);
 
     return userOutput;
   }
