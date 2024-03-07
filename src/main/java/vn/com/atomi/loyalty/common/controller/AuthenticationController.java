@@ -48,7 +48,7 @@ public class AuthenticationController {
   }
 
   @Operation(summary = "Lấy thông tin người dùng")
-  @GetMapping("/public/auth/user")
+  @GetMapping("/auth/user")
   public ResponseEntity<ResponseData<UserOutput>> getUser(
       @Parameter(description = "refresh token") @RequestParam String token) {
     return ResponseUtils.success(authenticationService.getUser(token));
