@@ -62,6 +62,9 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   @Value("${custom.properties.security.system.setting.max-login-failed}")
   private int maxLoginFailed;
 
+  @Value("${custom.properties.security.system.setting.lifespan}")
+  private Duration userLockLifespan;
+
   @Value("${custom.properties.security.session-lifespan}")
   private Duration sessionLifespan;
 
@@ -145,7 +148,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     val list = userRepository.findUserInfo(username);
     if (list.isEmpty()) throw new BaseException(USER_NOT_EXIST);
 
-    //mapping toUserOutput
+    // mapping toUserOutput
     val roles =
         list.stream()
             .map(objects -> mapper.toRoleOutput((Role) objects[1]))
@@ -174,24 +177,28 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     // count login failure
     Integer count = null;
     if (bruteForceDetection) {
-      val countOptional = redisAuthFailureCount.get(user.getId());
+      val countOptional = redisAuthFailureCount.get(user.getUsername());
       if (countOptional.isPresent()) {
-        count = countOptional.get();
-        if (countOptional.get() >= maxLoginFailed) {
-          throw new BaseException(USER_LOCKED);
-        }
+        val pair = countOptional.get();
+        count = pair.getSecond();
+        if (count >= maxLoginFailed)
+          throw new BaseException(new Long[] {pair.getFirst()}, USER_LOCKED);
       }
     }
 
     // check password
     if (!encoder.matches(input.getPassword(), user.getPassword())) {
-      if (bruteForceDetection)
-        redisAuthFailureCount.put(user.getId(), count == null ? 1 : count + 1);
+      if (bruteForceDetection) {
+        count = count == null ? 1 : count + 1;
+        redisAuthFailureCount.put(user.getUsername(), count);
+        if (count >= maxLoginFailed)
+          throw new BaseException(new Long[] {userLockLifespan.toMinutes()}, USER_LOCKED);
+      }
       throw new BaseException(PASSWORD_INCORRECT);
     }
 
     // login success clear counter
-    redisAuthFailureCount.remove(user.getId());
+    redisAuthFailureCount.remove(user.getUsername());
 
     return user;
   }
