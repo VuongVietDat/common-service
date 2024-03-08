@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.common.service;
 
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
+import vn.com.atomi.loyalty.base.security.UserOutput;
 
 /**
  * @author haidv
@@ -14,4 +15,6 @@ public interface AuthenticationService {
   LoginOutput renewToken(String token);
 
   void logout(String token);
+
+  UserOutput getUser();
 }

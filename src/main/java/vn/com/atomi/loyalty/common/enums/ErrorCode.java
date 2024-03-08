@@ -9,6 +9,13 @@ import vn.com.atomi.loyalty.base.exception.AbstractError;
  */
 public enum ErrorCode implements AbstractError {
   JOB_NOT_EXISTED(1, "Không tìm thấy tiến trình với id = %s", HttpStatus.BAD_REQUEST),
+  USER_LOCKED(
+      1002,
+      "Tài khoản của bạn đã bị khóa do nhập sai quá 5 lần liên tiếp."
+          + " Vui lòng thử lại sau %d phút hoặc liên hệ với quản trị viên hệ thống.",
+      HttpStatus.UNAUTHORIZED),
+  USER_NOT_EXIST(1003, "Người dùng không tồn tại", HttpStatus.UNAUTHORIZED),
+  PASSWORD_INCORRECT(1004, "Sai mật khẩu", HttpStatus.UNAUTHORIZED),
   ;
 
   private final int code;

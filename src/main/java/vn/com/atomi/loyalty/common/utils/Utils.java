@@ -1,6 +1,11 @@
 package vn.com.atomi.loyalty.common.utils;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import java.util.UUID;
+import lombok.val;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author haidv
@@ -18,5 +23,13 @@ public class Utils {
 
   public static String makeLikeParameter(String param) {
     return "%|" + param + "|%";
+  }
+
+  public static Optional<HttpServletRequest> getCurrentRequest() {
+    val requestAttributes = RequestContextHolder.getRequestAttributes();
+    if (requestAttributes instanceof ServletRequestAttributes) {
+      return Optional.of(((ServletRequestAttributes) requestAttributes).getRequest());
+    }
+    return Optional.empty();
   }
 }
