@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.common.repository.redis;
+package vn.com.atomi.loyalty.base.redis;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-import vn.com.atomi.loyalty.common.dto.output.UserOutput;
+import vn.com.atomi.loyalty.base.security.UserOutput;
 
 @Repository
 @RequiredArgsConstructor

@@ -20,20 +20,20 @@ import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
+import vn.com.atomi.loyalty.base.redis.CacheUserRepository;
 import vn.com.atomi.loyalty.base.redis.TokenBlackList;
 import vn.com.atomi.loyalty.base.redis.TokenBlackListRepository;
 import vn.com.atomi.loyalty.base.security.TokenProvider;
+import vn.com.atomi.loyalty.base.security.UserOutput;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
-import vn.com.atomi.loyalty.common.dto.output.UserOutput;
 import vn.com.atomi.loyalty.common.entity.Permission;
 import vn.com.atomi.loyalty.common.entity.Role;
 import vn.com.atomi.loyalty.common.entity.Session;
 import vn.com.atomi.loyalty.common.entity.User;
 import vn.com.atomi.loyalty.common.mapper.ModelMapper;
 import vn.com.atomi.loyalty.common.repository.*;
-import vn.com.atomi.loyalty.common.repository.redis.CacheUserRepository;
 import vn.com.atomi.loyalty.common.repository.redis.LoginFailureCountRepository;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
 import vn.com.atomi.loyalty.common.utils.Utils;
@@ -145,6 +145,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     val list = userRepository.findUserInfo(username);
     if (list.isEmpty()) throw new BaseException(USER_NOT_EXIST);
 
+    //mapping toUserOutput
     val roles =
         list.stream()
             .map(objects -> mapper.toRoleOutput((Role) objects[1]))

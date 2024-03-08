@@ -11,7 +11,7 @@ import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponseUtils;
 import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.dto.output.LoginOutput;
-import vn.com.atomi.loyalty.common.dto.output.UserOutput;
+import vn.com.atomi.loyalty.base.security.UserOutput;
 import vn.com.atomi.loyalty.common.service.AuthenticationService;
 
 /**

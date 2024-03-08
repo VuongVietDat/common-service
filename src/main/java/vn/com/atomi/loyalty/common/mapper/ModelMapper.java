@@ -4,9 +4,9 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import vn.com.atomi.loyalty.common.dto.output.DictionaryOutput;
-import vn.com.atomi.loyalty.common.dto.output.PermissionOutput;
-import vn.com.atomi.loyalty.common.dto.output.RoleOutput;
-import vn.com.atomi.loyalty.common.dto.output.UserOutput;
+import vn.com.atomi.loyalty.base.security.PermissionOutput;
+import vn.com.atomi.loyalty.base.security.RoleOutput;
+import vn.com.atomi.loyalty.base.security.UserOutput;
 import vn.com.atomi.loyalty.common.entity.*;
 import vn.com.atomi.loyalty.common.event.RetriesMessageData;
 

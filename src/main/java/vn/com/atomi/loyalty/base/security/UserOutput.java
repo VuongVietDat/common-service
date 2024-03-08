@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.common.dto.output;
+package vn.com.atomi.loyalty.base.security;
 
 import lombok.Data;
 
