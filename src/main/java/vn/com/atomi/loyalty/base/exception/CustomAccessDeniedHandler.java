@@ -47,6 +47,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
               auth.getName(), request.getRequestURI()));
     }
     var errorCode = CommonErrorCode.FORBIDDEN;
+    response.setCharacterEncoding("UTF-8");
     response.setStatus(errorCode.getHttpStatus().value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response
