@@ -61,6 +61,8 @@ public class DateConstant {
 
   public static final String STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE = "dd/MM/yyyy HH:mm:ss";
 
+  public static final String STR_PLAN_YYYY_MM_DD_HH_MM_SS_SSS_STROKE = "dd/MM/yyyy HH:mm:ss.SSS";
+
   public static final String STR_PLAN_YYYY_MM_DD_HH_MM_STROKE = "yyyy/MM/dd HH:mm";
 
   public static final String SMTP_DATETIME_FORMAT = "EEE, dd MMM yyyy HH:mm:ss Z";

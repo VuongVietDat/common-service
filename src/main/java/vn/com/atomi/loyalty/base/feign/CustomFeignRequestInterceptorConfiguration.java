@@ -46,7 +46,8 @@ public class CustomFeignRequestInterceptorConfiguration implements RequestInterc
     template.header(
         RequestConstant.CLIENT_TIME,
         LocalDateTime.now()
-            .format(DateTimeFormatter.ofPattern(DateConstant.STR_PLAN_YYYY_MM_DD_HH_MM_SS_SSS)));
+            .format(
+                DateTimeFormatter.ofPattern(DateConstant.STR_PLAN_YYYY_MM_DD_HH_MM_SS_SSS_STROKE)));
     template.header(RequestConstant.CLIENT_PLATFORM, serviceName);
   }
 }

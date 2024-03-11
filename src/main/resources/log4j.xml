@@ -5,14 +5,14 @@
     </Property>
   </Properties>
   <Appenders>
-<!--    <Kafka name="KafkaAppender" topic="APPLICATION_LOG_DEV">-->
-<!--      <JSONLayout compact="true" properties="true" stacktraceAsString="true">-->
-<!--        <KeyValuePair key="application" value="$${spring:spring.application.name}"/>-->
-<!--        <KeyValuePair key="CustomTimestamp" value="$${date:yyyy-MM-dd HH:mm:ss.SSS}"/>-->
-<!--      </JSONLayout>-->
-<!--      <PatternLayout pattern="${LOG_PATTERN}"/>-->
-<!--      <Property name="bootstrap.servers">54.79.16.165:9093</Property>-->
-<!--    </Kafka>-->
+    <Kafka name="KafkaAppender" topic="APPLICATION_LOG_DEV">
+      <JSONLayout compact="true" properties="true" stacktraceAsString="true">
+        <KeyValuePair key="application" value="$${spring:spring.application.name}"/>
+        <KeyValuePair key="CustomTimestamp" value="$${date:yyyy-MM-dd HH:mm:ss.SSS}"/>
+      </JSONLayout>
+      <PatternLayout pattern="${LOG_PATTERN}"/>
+      <Property name="bootstrap.servers">10.33.237.85:9092</Property>
+    </Kafka>
     <Console follow="true" name="ConsoleAppender"
       target="SYSTEM_OUT">
       <PatternLayout pattern="${LOG_PATTERN}"/>

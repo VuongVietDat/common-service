@@ -38,7 +38,7 @@ public class ResponseData<T> implements Serializable {
     this.code = 0;
     this.timestamp =
         LocalDateTime.now()
-            .format(DateTimeFormatter.ofPattern(DateConstant.STR_PLAN_YYYY_MM_DD_HH_MM_SS));
+            .format(DateTimeFormatter.ofPattern(DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE));
     this.message = "Successful!";
     this.service = RequestUtils.extractServiceName();
     this.requestId = RequestUtils.extractRequestId();

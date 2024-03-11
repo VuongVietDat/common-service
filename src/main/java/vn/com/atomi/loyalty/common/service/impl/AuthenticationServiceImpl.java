@@ -139,11 +139,13 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   @Override
   public UserOutput getUser() {
     val username = getCurrentUserPrincipal().getUsername();
-
     // check has cache
     val cache = cacheUserRepository.get(username);
-    if (cache.isPresent()) return cache.get();
+    return cache.orElseGet(() -> this.getUser(username));
+  }
 
+  @Override
+  public UserOutput getUser(String username) {
     // load DB
     val list = userRepository.findUserInfo(username);
     if (list.isEmpty()) throw new BaseException(USER_NOT_EXIST);
