@@ -2,7 +2,6 @@ package vn.com.atomi.loyalty.base.security;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-
 import lombok.Getter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +22,7 @@ public class UserPrincipal implements UserDetails {
     if (!CollectionUtils.isEmpty(userOutput.getPermissions())) {
       this.authorities =
           userOutput.getPermissions().stream()
-              .map(v -> new SimpleGrantedAuthority("ROLE_" + v.getName()))
+              .map(v -> new SimpleGrantedAuthority(v.getName()))
               .collect(Collectors.toList());
     }
   }
