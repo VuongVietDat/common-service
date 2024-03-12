@@ -1,8 +1,7 @@
 package vn.com.atomi.loyalty.base.security;
 
-import lombok.Data;
-
 import java.util.Set;
+import lombok.Data;
 
 @Data
 public class UserOutput {

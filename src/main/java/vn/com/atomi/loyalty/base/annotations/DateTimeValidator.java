@@ -35,7 +35,7 @@ public @interface DateTimeValidator {
 
   boolean required() default true;
 
-  String pattern() default DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS;
+  String pattern() default DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE;
 
   String message() default "{validation.constraints.DateTimeValidator.message}";
 

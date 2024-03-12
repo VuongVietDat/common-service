@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
@@ -16,7 +15,6 @@ import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandl
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -29,7 +27,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextListener;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vn.com.atomi.loyalty.base.exception.CustomAccessDeniedHandler;
@@ -69,12 +67,19 @@ public class ApplicationSecurityConfig {
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
   private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-  @Value("${custom.properties.cors.config.allow.origin:*}")
-  private String allowOrigins;
-
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
+    http.cors(
+            cors ->
+                cors.configurationSource(
+                    request -> {
+                      CorsConfiguration configuration = new CorsConfiguration();
+                      configuration.setAllowedOrigins(List.of("*"));
+                      configuration.setAllowedMethods(List.of("*"));
+                      configuration.setAllowedHeaders(List.of("*"));
+                      return configuration;
+                    }))
+        .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
@@ -137,22 +142,6 @@ public class ApplicationSecurityConfig {
   @Bean
   public WebMvcConfigurer corsMappingConfigurer() {
     return new WebMvcConfigurer() {
-      @Override
-      public void addCorsMappings(CorsRegistry registry) {
-        registry
-            .addMapping("/**")
-            .allowedOrigins(allowOrigins.split(","))
-            .allowedMethods(
-                HttpMethod.DELETE.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.PATCH.name(),
-                HttpMethod.OPTIONS.name())
-            .maxAge(3600)
-            .allowedHeaders("*")
-            .exposedHeaders("*");
-      }
-
       @Override
       public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
