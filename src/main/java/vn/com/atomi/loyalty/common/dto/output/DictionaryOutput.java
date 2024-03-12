@@ -16,7 +16,7 @@ public class DictionaryOutput {
 
   private Long id;
 
-  private String type;
+  private String parentCode;
 
   private String code;
 

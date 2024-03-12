@@ -1,6 +1,7 @@
 package vn.com.atomi.loyalty.common.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +30,12 @@ public class DictionaryController extends BaseController {
   public ResponseEntity<ResponseData<List<DictionaryOutput>>> getDictionaries(
       @RequestParam(required = false) String type, @RequestParam(required = false) Status status) {
     return ResponseUtils.success(dictionaryService.getDictionaries(type, status));
+  }
+
+  @Operation(summary = "Api lấy danh sách tất cả cấu hình đang hiệu lực")
+  @GetMapping("/dictionaries-activated")
+  public ResponseEntity<ResponseData<List<DictionaryOutput>>> getDictionaries(
+      @Parameter(description = "Loại cấu hình") @RequestParam(required = false) String type) {
+    return ResponseUtils.success(dictionaryService.getDictionaries(type));
   }
 }

@@ -36,8 +36,23 @@ public class DictionaryServiceImpl extends BaseService implements DictionaryServ
     return out.stream()
         .filter(
             v ->
-                (StringUtils.isEmpty(type) || v.getType().equals(type))
+                (StringUtils.isEmpty(type) || v.getParentCode().equals(type))
                     && (status == null || v.getStatus().equals(status)))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<DictionaryOutput> getDictionaries(String type) {
+    var out = masterDataRepository.getDictionary();
+    if (CollectionUtils.isEmpty(out)) {
+      List<Dictionary> dictionaries = dictionaryRepository.findByDeletedFalse();
+      out = super.modelMapper.convertToDictionaryOutputs(dictionaries);
+      if (!CollectionUtils.isEmpty(out)) {
+        masterDataRepository.putDictionary(out);
+      }
+    }
+    return out.stream()
+        .filter(v -> v.getParentCode().equals(type) && v.getStatus().equals(Status.ACTIVE))
         .collect(Collectors.toList());
   }
 }
