@@ -27,8 +27,8 @@ public class Dictionary extends BaseEntity {
       allocationSize = 1)
   private Long id;
 
-  @Column(name = "type")
-  private String type;
+  @Column(name = "parent_code")
+  private String parentCode;
 
   @Column(name = "code")
   private String code;
