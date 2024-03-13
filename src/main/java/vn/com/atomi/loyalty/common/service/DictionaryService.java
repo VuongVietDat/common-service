@@ -10,7 +10,5 @@ import vn.com.atomi.loyalty.common.enums.Status;
  */
 public interface DictionaryService {
 
-  List<DictionaryOutput> getDictionaries(String type, Status status);
-
-  List<DictionaryOutput> getDictionaries(String type);
+  List<DictionaryOutput> getDictionaries(String type, Status status, boolean isSubLeaf);
 }

@@ -29,14 +29,20 @@ public class DictionaryController extends BaseController {
   @PreAuthorize(Authority.ROLE_SYSTEM)
   @GetMapping("/internal/dictionaries")
   public ResponseEntity<ResponseData<List<DictionaryOutput>>> getDictionaries(
-      @RequestParam(required = false) String type, @RequestParam(required = false) Status status) {
-    return ResponseUtils.success(dictionaryService.getDictionaries(type, status));
+      @RequestParam(required = false) String type,
+      @RequestParam(required = false) Status status,
+      @RequestParam(required = false, defaultValue = "true") Boolean isSubLeaf) {
+    return ResponseUtils.success(dictionaryService.getDictionaries(type, status, isSubLeaf));
   }
 
   @Operation(summary = "Api lấy danh sách tất cả cấu hình đang hiệu lực")
-  @GetMapping("/dictionaries-activated")
-  public ResponseEntity<ResponseData<List<DictionaryOutput>>> getDictionaries(
-      @Parameter(description = "Loại cấu hình") @RequestParam(required = false) String type) {
-    return ResponseUtils.success(dictionaryService.getDictionaries(type));
+  @GetMapping("/all-dictionaries")
+  public ResponseEntity<ResponseData<List<DictionaryOutput>>> getAllDictionaries(
+      @Parameter(description = "Loại cấu hình", example = "RULE_TYPE")
+          @RequestParam(required = false)
+          String type,
+      @RequestParam(required = false) Status status,
+      @RequestParam(required = false, defaultValue = "true") Boolean isSubLeaf) {
+    return ResponseUtils.success(dictionaryService.getDictionaries(type, status, isSubLeaf));
   }
 }

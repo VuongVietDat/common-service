@@ -27,32 +27,24 @@ public class DictionaryServiceImpl extends BaseService implements DictionaryServ
   private final MasterDataRepository masterDataRepository;
 
   @Override
-  public List<DictionaryOutput> getDictionaries(String type, Status status) {
+  public List<DictionaryOutput> getDictionaries(String type, Status status, boolean isSubLeaf) {
     List<Dictionary> dictionaries = dictionaryRepository.findByDeletedFalse();
-    var out = super.modelMapper.convertToDictionaryOutputs(dictionaries);
-    if (!CollectionUtils.isEmpty(out)) {
-      masterDataRepository.putDictionary(out);
+    var node = super.modelMapper.convertToDictionaryOutputs(dictionaries);
+    if (!CollectionUtils.isEmpty(node)) {
+      masterDataRepository.putDictionary(node);
     }
-    return out.stream()
-        .filter(
-            v ->
-                (StringUtils.isEmpty(type) || v.getParentCode().equals(type))
-                    && (status == null || v.getStatus().equals(status)))
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public List<DictionaryOutput> getDictionaries(String type) {
-    var out = masterDataRepository.getDictionary();
-    if (CollectionUtils.isEmpty(out)) {
-      List<Dictionary> dictionaries = dictionaryRepository.findByDeletedFalse();
-      out = super.modelMapper.convertToDictionaryOutputs(dictionaries);
-      if (!CollectionUtils.isEmpty(out)) {
-        masterDataRepository.putDictionary(out);
-      }
+    List<DictionaryOutput> leafs =
+        node.stream()
+            .filter(
+                v ->
+                    (StringUtils.isEmpty(type) || type.equals(v.getParentCode()))
+                        && (status == null || v.getStatus().equals(status)))
+            .collect(Collectors.toList());
+    if (StringUtils.isNotBlank(type) && isSubLeaf) {
+      List<String> leafCode = leafs.stream().map(DictionaryOutput::getCode).toList();
+      var subLeaf = node.stream().filter(v -> leafCode.contains(v.getParentCode())).toList();
+      leafs.addAll(subLeaf);
     }
-    return out.stream()
-        .filter(v -> v.getParentCode().equals(type) && v.getStatus().equals(Status.ACTIVE))
-        .collect(Collectors.toList());
+    return leafs;
   }
 }
