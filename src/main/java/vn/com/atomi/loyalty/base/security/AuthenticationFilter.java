@@ -39,6 +39,8 @@ import vn.com.atomi.loyalty.common.service.AuthenticationService;
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
 
+  private static final String INTERNAL_API_PREFIX = "/internal/**";
+
   private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
   @Autowired private TokenProvider tokenProvider;
@@ -94,21 +96,23 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
-      var secureKey = getInternalSecureKeyFromRequest(request);
+      var secureKey = request.getHeader(RequestConstant.SECURE_API_KEY);
       if (StringUtils.hasText(secureKey)
-          && secureKey
-              .substring(RequestConstant.SECURE_PREFIX.length())
-              .equals(internalCredentials)) {
-        var userDetails =
-            new UserPrincipal(
-                UUID.randomUUID().toString(),
-                RequestConstant.SYSTEM,
-                List.of(new SimpleGrantedAuthority(RequestConstant.ROLE_SYSTEM)));
-        var authentication =
-            new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+          && RequestUtils.matches(request, Set.of(INTERNAL_API_PREFIX))) {
+        if (secureKey.equals(internalCredentials)) {
+          var userDetails =
+              new UserPrincipal(
+                  UUID.randomUUID().toString(),
+                  RequestConstant.SYSTEM,
+                  List.of(new SimpleGrantedAuthority(RequestConstant.ROLE_SYSTEM)));
+          var authentication =
+              new UsernamePasswordAuthenticationToken(
+                  userDetails, null, userDetails.getAuthorities());
+          authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+          LOGGER.error("Internal secure-api-key not match");
+        }
       }
 
     } catch (BaseException ex) {
@@ -134,14 +138,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     var bearerToken = request.getHeader(RequestConstant.AUTHORIZATION);
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(RequestConstant.BEARER_PREFIX)) {
       return bearerToken;
-    }
-    return null;
-  }
-
-  private String getInternalSecureKeyFromRequest(HttpServletRequest request) {
-    var secureKey = request.getHeader(RequestConstant.AUTHORIZATION);
-    if (StringUtils.hasText(secureKey) && secureKey.startsWith(RequestConstant.SECURE_PREFIX)) {
-      return secureKey;
     }
     return null;
   }

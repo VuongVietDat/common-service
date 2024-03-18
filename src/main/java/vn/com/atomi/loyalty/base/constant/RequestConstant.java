@@ -33,7 +33,7 @@ public class RequestConstant {
 
   public static final String BASIC_PREFIX = "Basic ";
 
-  public static final String SECURE_PREFIX = "SecureKey ";
+  public static final String SECURE_API_KEY = "secure-api-key";
 
   public static final String SESSION_ID = "sessionId";
 

@@ -44,6 +44,7 @@ public class ApplicationSecurityConfig {
       new String[] {
         "/",
         "/public/**",
+        "/internal/**",
         "/error",
         "/favicon.ico",
         "/**/*.png",

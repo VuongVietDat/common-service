@@ -29,8 +29,7 @@ public class CustomFeignRequestInterceptorConfiguration implements RequestInterc
   @Override
   public void apply(RequestTemplate template) {
     String requestID;
-    template.header(
-        RequestConstant.AUTHORIZATION, RequestConstant.SECURE_PREFIX + internalCredentials);
+    template.header(RequestConstant.SECURE_API_KEY, internalCredentials);
     if (template.headers().get(RequestConstant.REQUEST_ID).isEmpty()) {
       requestID = UUID.randomUUID().toString();
       template.header(RequestConstant.REQUEST_ID, requestID);
