@@ -15,7 +15,10 @@ public enum ErrorCode implements AbstractError {
           + " Vui lòng thử lại sau %d phút hoặc liên hệ với quản trị viên hệ thống.",
       HttpStatus.UNAUTHORIZED),
   USER_NOT_EXIST(2002, "Người dùng không tồn tại", HttpStatus.UNAUTHORIZED),
-  PASSWORD_INCORRECT(2003, "Sai mật khẩu", HttpStatus.UNAUTHORIZED),
+  USER_INCORRECT(
+      2003,
+      "Sai tên đăng nhập/ mật khẩu quá 5 lần sẽ bị khóa. Bạn còn %d lần thử lại.",
+      HttpStatus.UNAUTHORIZED),
   ;
 
   private final int code;

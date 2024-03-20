@@ -178,25 +178,21 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
 
     // count login failure
     Integer count = null;
-    if (bruteForceDetection) {
-      val countOptional = redisAuthFailureCount.get(user.getUsername());
-      if (countOptional.isPresent()) {
-        val pair = countOptional.get();
-        count = pair.getSecond();
-        if (count >= maxLoginFailed)
-          throw new BaseException(new Long[] {pair.getFirst()}, USER_LOCKED);
-      }
+    val countOptional = redisAuthFailureCount.get(user.getUsername());
+    if (countOptional.isPresent()) {
+      val pair = countOptional.get();
+      count = pair.getSecond();
+      if (count >= maxLoginFailed)
+        throw new BaseException(new Long[] {pair.getFirst() + 1}, USER_LOCKED);
     }
 
     // check password
     if (!encoder.matches(input.getPassword(), user.getPassword())) {
-      if (bruteForceDetection) {
-        count = count == null ? 1 : count + 1;
-        redisAuthFailureCount.put(user.getUsername(), count);
-        if (count >= maxLoginFailed)
-          throw new BaseException(new Long[] {userLockLifespan.toMinutes()}, USER_LOCKED);
-      }
-      throw new BaseException(PASSWORD_INCORRECT);
+      count = count == null ? 1 : count + 1;
+      redisAuthFailureCount.put(user.getUsername(), count);
+      if (count >= maxLoginFailed)
+        throw new BaseException(new Long[] {userLockLifespan.toMinutes()}, USER_LOCKED);
+      throw new BaseException(new Integer[] {maxLoginFailed - count}, USER_INCORRECT);
     }
 
     // login success clear counter
