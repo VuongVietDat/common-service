@@ -17,6 +17,10 @@ public enum ErrorCode implements AbstractError {
   USER_NOT_EXIST(2002, "Người dùng không tồn tại", HttpStatus.UNAUTHORIZED),
   USER_INCORRECT(
       2003,
+      "Tài khoản bạn nhập không tồn tại. Bạn vui lòng kiểm tra lại thông tin đăng nhập.",
+      HttpStatus.UNAUTHORIZED),
+  PASS_INCORRECT(
+      2004,
       "Sai tên đăng nhập/ mật khẩu quá 5 lần sẽ bị khóa. Bạn còn %d lần thử lại.",
       HttpStatus.UNAUTHORIZED),
   ;

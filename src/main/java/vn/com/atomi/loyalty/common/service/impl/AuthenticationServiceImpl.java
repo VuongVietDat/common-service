@@ -174,7 +174,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
     val user =
         userRepository
             .findByUsernameAndDeletedFalse(input.getUsername())
-            .orElseThrow(() -> new BaseException(USER_NOT_EXIST));
+            .orElseThrow(() -> new BaseException(USER_INCORRECT));
 
     // count login failure
     Integer count = null;
@@ -192,7 +192,7 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
       redisAuthFailureCount.put(user.getUsername(), count);
       if (count >= maxLoginFailed)
         throw new BaseException(new Long[] {userLockLifespan.toMinutes()}, USER_LOCKED);
-      throw new BaseException(new Integer[] {maxLoginFailed - count}, USER_INCORRECT);
+      throw new BaseException(new Integer[] {maxLoginFailed - count}, PASS_INCORRECT);
     }
 
     // login success clear counter
