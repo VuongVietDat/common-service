@@ -22,7 +22,7 @@ public class Utils {
   }
 
   public static String makeLikeParameter(String param) {
-    return "%|" + param + "|%";
+    return "%" + param + "%";
   }
 
   public static Optional<HttpServletRequest> getCurrentRequest() {
