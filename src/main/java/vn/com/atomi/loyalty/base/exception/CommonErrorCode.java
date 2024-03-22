@@ -31,7 +31,7 @@ public enum CommonErrorCode implements AbstractError {
       "Trình xử lý yêu cầu không thể tạo ra phản hồi được máy khách chấp nhận.",
       HttpStatus.UNSUPPORTED_MEDIA_TYPE),
   ARGUMENT_TYPE_MISMATCH(10, "Loại thông số bắt buộc %s '%s' không khớp", HttpStatus.BAD_REQUEST),
-  ARGUMENT_NOT_VALID(11, "Lỗi validation tham số", HttpStatus.BAD_REQUEST),
+  ARGUMENT_NOT_VALID(11, "Lỗi nhập liệu", HttpStatus.BAD_REQUEST),
   ENTITY_NOT_FOUND(12, "Đối tượng không còn tồn tại trong cơ sở dữ liệu.", HttpStatus.NOT_FOUND),
   INTERNAL_SERVER_ERROR(
       13,
