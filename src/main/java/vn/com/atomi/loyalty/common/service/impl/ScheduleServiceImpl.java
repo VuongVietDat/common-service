@@ -76,6 +76,7 @@ public class ScheduleServiceImpl extends BaseService implements ScheduleService 
       scheduleCreator.scheduleJob(jobDetail, trigger);
     }
     scheduleInfo.setJobStatus(StatusJob.STARTED);
+    scheduleRepository.save(scheduleInfo);
   }
 
   public void pauseJob(Long id) throws SchedulerException {
@@ -91,6 +92,7 @@ public class ScheduleServiceImpl extends BaseService implements ScheduleService 
     } else {
       scheduler.deleteJob(jobKey);
       scheduleInfo.setJobStatus(StatusJob.STOPPED);
+      scheduleRepository.save(scheduleInfo);
     }
   }
 

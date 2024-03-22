@@ -1,10 +1,10 @@
 package vn.com.atomi.loyalty.common.feign;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.ResponseData;
-import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.feign.fallback.LoyaltyCoreClientFallbackFactory;
 
 /**
@@ -17,16 +17,8 @@ import vn.com.atomi.loyalty.common.feign.fallback.LoyaltyCoreClientFallbackFacto
     fallbackFactory = LoyaltyCoreClientFallbackFactory.class)
 public interface LoyaltyCoreClient {
 
-  @PostMapping("/public/example-success")
-  ResponseData<String> exampleSuccess(
-      @RequestHeader(RequestConstant.REQUEST_ID) String requestId,
-      @RequestParam String query,
-      @RequestBody LoginInput loginInput);
-
-  @GetMapping("/public/example-error")
-  ResponseData<String> exampleError(@RequestHeader(RequestConstant.REQUEST_ID) String requestId);
-
-  @GetMapping("/public/example-error-fallback")
-  ResponseData<String> exampleErrorFallBack(
+  @Operation(summary = "Api (nội bộ) thực hiện hết hạn điểm")
+  @PostMapping("/internal/points-expiration")
+  ResponseData<String> executePointExpiration(
       @RequestHeader(RequestConstant.REQUEST_ID) String requestId);
 }
