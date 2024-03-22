@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
-import vn.com.atomi.loyalty.common.dto.input.LoginInput;
 import vn.com.atomi.loyalty.common.feign.LoyaltyCoreClient;
 
 /**
@@ -24,20 +23,8 @@ public class LoyaltyCoreClientFallbackFactory implements FallbackFactory<Loyalty
     LOGGER.error("An exception occurred when calling the LoyaltyCoreClient", cause);
     return new LoyaltyCoreClient() {
       @Override
-      public ResponseData<String> exampleSuccess(
-          String requestId, String query, LoginInput loginInput) {
-        return new ResponseData().success("[LoyaltyCoreClient].exampleSuccess");
-      }
-
-      @Override
-      public ResponseData<String> exampleError(String requestId) {
+      public ResponseData<String> executePointExpiration(String requestId) {
         throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
-      }
-
-      @Override
-      public ResponseData<String> exampleErrorFallBack(String requestId) {
-        LOGGER.warn("Set default response data");
-        return new ResponseData().success("[LoyaltyCoreClient].exampleErrorFallBack");
       }
     };
   }
