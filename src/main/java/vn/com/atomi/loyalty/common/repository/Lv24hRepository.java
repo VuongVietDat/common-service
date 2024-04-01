@@ -2,16 +2,20 @@ package vn.com.atomi.loyalty.common.repository;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Map;
+import vn.com.atomi.loyalty.base.utils.JsonUtils;
+import vn.com.atomi.loyalty.common.event.MessageData;
 
 @Repository
 public class Lv24hRepository {
   private final JdbcTemplate template;
 
-  public Lv24hRepository() {
+  @SuppressWarnings("rawtypes")
+  private final KafkaTemplate kafkaTemplate;
+
+  @SuppressWarnings("rawtypes")
+  public Lv24hRepository(KafkaTemplate kafkaTemplate) {
     template =
         new JdbcTemplate(
             DataSourceBuilder.create()
@@ -19,12 +23,16 @@ public class Lv24hRepository {
                 .username("ESMAC_VV_TE")
                 .password("esmac_vv_te")
                 .build());
+
+    this.kafkaTemplate = kafkaTemplate;
   }
 
-  public List<Map<String, Object>> selects(long customerId) {
-    return template.queryForList(
-        String.format(
-            """
+  @SuppressWarnings({"unchecked"})
+  public void selects(long customerId) {
+    var list =
+        template.queryForList(
+            String.format(
+                """
                 SELECT cus.*,
                 	mu.USER_NAME,
                 	mu.CUST_NO, -- CIF NO
@@ -57,19 +65,9 @@ public class Lv24hRepository {
                 ORDER BY c.CUSTOMER_ID
                 ) cus JOIN MASTER_USER mu ON cus.USER_ID = mu.USER_ID
                 """,
-            customerId));
+                customerId));
+
+    var msgData = new MessageData<>(list);
+    kafkaTemplate.send("CUSTOMER_CREATE_EVENT", JsonUtils.toJson(msgData));
   }
-  /*public void selects() {
-    template.query(
-        """
-            SELECT COUNT(*) FROM
-            	MASTER_USER mu,
-            	CUSTOMER c
-            WHERE mu.CUST_NO = c.customer_no
-            AND mu.USER_STATUS != 'C'
-            """,
-        rs -> {
-          System.out.println("zxc " + rs);
-        });
-  }*/
 }

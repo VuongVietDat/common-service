@@ -48,7 +48,7 @@ public class ScheduleController extends BaseController {
   }
 
   @GetMapping("/public/test")
-  public Object test(long cusID) {
-    return repo.selects(cusID);
+  public void test() {
+     repo.selects(21059);
   }
 }
