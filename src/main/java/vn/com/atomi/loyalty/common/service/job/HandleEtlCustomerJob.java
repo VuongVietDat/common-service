@@ -50,7 +50,7 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
       scheduleLog = scheduleLogRepository.save(scheduleLog);
     }
     try {
-//      lv24hRepository.selects();
+      lv24hRepository.selects(21059);
       status = StatusJob.SUCCESS;
     } catch (Exception e) {
       msg = e.getMessage();
