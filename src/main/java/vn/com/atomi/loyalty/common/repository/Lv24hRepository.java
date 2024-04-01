@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class Lv24hRepository {
+  public static final int batchSize = 100;
   private final JdbcTemplate template;
 
   public Lv24hRepository() {
@@ -55,11 +56,11 @@ public class Lv24hRepository {
                     group by CUST_NO
                     ) firstU
                 on (firstU.CUST_NO = c.CUSTOMER_NO)
-                WHERE c.CUSTOMER_ID > %d AND ROWNUM <= 100
+                WHERE c.CUSTOMER_ID > %d AND ROWNUM <= %d
                 ORDER BY c.CUSTOMER_ID
                 ) cus JOIN MASTER_USER mu ON cus.USER_ID = mu.USER_ID
                 JOIN CORE_CUSTOMER cc ON cus.CUSTOMER_NO = cc.CUST_NO
                 """,
-            lastCustomerId));
+            lastCustomerId, batchSize));
   }
 }

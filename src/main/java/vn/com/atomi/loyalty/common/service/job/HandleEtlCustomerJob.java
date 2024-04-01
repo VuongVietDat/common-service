@@ -81,7 +81,7 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
   @SuppressWarnings({"unchecked"})
   private void process() {
     var list = lv24hRepository.selects(redisLastCus.get());
-    // TODO: 01/04/2024 if list <100 break
+    // TODO: 01/04/2024 if list <100 done
 
     var lastID = (BigDecimal) CollectionUtils.lastElement(list).get("CUSTOMER_ID");
     redisLastCus.put(lastID.longValue());
