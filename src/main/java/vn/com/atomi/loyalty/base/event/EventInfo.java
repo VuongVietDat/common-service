@@ -16,7 +16,7 @@ public class EventInfo {
 
   private final String id;
 
-  private final Object what;
+  private final EventData what;
 
   private final CoreEvent event;
 
@@ -24,19 +24,19 @@ public class EventInfo {
 
   private final int retry;
 
-  public EventInfo(Object what, CoreEvent event) {
+  public EventInfo(EventData what, CoreEvent event) {
     this(what, event, DEFAULT_RETRY_EVENT);
   }
 
-  public EventInfo(Object what, CoreEvent event, int retry) {
+  public EventInfo(EventData what, CoreEvent event, int retry) {
     this(what, false, event, retry);
   }
 
-  public EventInfo(Object what, boolean isSync, CoreEvent event) {
+  public EventInfo(EventData what, boolean isSync, CoreEvent event) {
     this(what, isSync, event, DEFAULT_RETRY_EVENT);
   }
 
-  public EventInfo(Object what, boolean isSync, CoreEvent event, int retry) {
+  public EventInfo(EventData what, boolean isSync, CoreEvent event, int retry) {
     this(UUID.randomUUID().toString(), what, event, isSync, retry);
   }
 }
