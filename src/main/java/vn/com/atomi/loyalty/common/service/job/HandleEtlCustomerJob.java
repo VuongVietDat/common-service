@@ -14,6 +14,7 @@ import vn.com.atomi.loyalty.common.entity.ScheduleInfo;
 import vn.com.atomi.loyalty.common.entity.ScheduleLog;
 import vn.com.atomi.loyalty.common.enums.ErrorCode;
 import vn.com.atomi.loyalty.common.enums.StatusJob;
+import vn.com.atomi.loyalty.common.repository.Lv24hRepository;
 import vn.com.atomi.loyalty.common.repository.ScheduleLogRepository;
 import vn.com.atomi.loyalty.common.repository.ScheduleRepository;
 import vn.com.atomi.loyalty.common.utils.Utils;
@@ -24,6 +25,7 @@ import vn.com.atomi.loyalty.common.utils.Utils;
 public class HandleEtlCustomerJob extends QuartzJobBean {
   private final ScheduleRepository scheduleRepository;
   private final ScheduleLogRepository scheduleLogRepository;
+  private final Lv24hRepository lv24hRepository;
 
   @Override
   protected void executeInternal(JobExecutionContext context) {
@@ -48,7 +50,7 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
       scheduleLog = scheduleLogRepository.save(scheduleLog);
     }
     try {
-      System.out.println("zxc");
+      lv24hRepository.selects();
       status = StatusJob.SUCCESS;
     } catch (Exception e) {
       msg = e.getMessage();
