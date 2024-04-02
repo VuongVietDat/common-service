@@ -37,6 +37,7 @@ public class Lv24hRepository {
                 SELECT
                 	c.CUSTOMER_ID,
                 	c.CUSTOMER_NO,	--cif
+                	c.CUSTOMER_NAME,	--cif
                 	c.PACKAGE_DEFAULT , -- Goi Khach hang
                 	c.UNIQUE_ID, -- Loai giay to
                 	c.UNIQUE_VALUE, -- So giay to
