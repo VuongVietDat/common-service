@@ -1,6 +1,10 @@
 package vn.com.atomi.loyalty.common.service.job;
 
+import static vn.com.atomi.loyalty.base.constant.DateConstant.STR_PLAN_DD_MM_YYYY_STROKE;
+
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +47,7 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
   @Value("${custom.properties.kafka.topic.customer-create.name}")
   String topic;
 
+  private final SimpleDateFormat dateFormat = new SimpleDateFormat(STR_PLAN_DD_MM_YYYY_STROKE);
   private final Map<String, String> mappingInfo =
       new HashMap<>() {
         {
@@ -96,7 +101,7 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
     }
     try {
       var count = process();
-      if (count < Lv24hRepository.batchSize) finishJob(scheduleInfo);
+      /*if (count < Lv24hRepository.batchSize)*/ finishJob(scheduleInfo);
       status = StatusJob.SUCCESS;
     } catch (Exception e) {
       msg = e.getMessage();
@@ -135,7 +140,10 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
                             (s, o) -> {
                               if (o != null) {
                                 var key = mappingInfo.get(s);
-                                if (key != null) put(key, o);
+                                if (key != null) {
+                                  if (o instanceof Timestamp ts) o = dateFormat.format(ts);
+                                  put(key, o);
+                                }
                               }
                             });
                       }
