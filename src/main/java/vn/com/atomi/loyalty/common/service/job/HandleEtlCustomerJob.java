@@ -8,14 +8,16 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.ThreadContext;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobKey;
+import org.quartz.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.exception.BaseException;
+import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
 import vn.com.atomi.loyalty.common.entity.ScheduleInfo;
 import vn.com.atomi.loyalty.common.entity.ScheduleLog;
@@ -32,10 +34,40 @@ import vn.com.atomi.loyalty.common.utils.Utils;
 @Component
 @RequiredArgsConstructor
 public class HandleEtlCustomerJob extends QuartzJobBean {
+  private final SchedulerFactoryBean schedulerFactoryBean;
   private final ScheduleRepository scheduleRepository;
   private final ScheduleLogRepository scheduleLogRepository;
   private final Lv24hRepository lv24hRepository;
   private final EtlLastCustomerRepository redisLastCus;
+
+  @Value("${custom.properties.kafka.topic.customer-create.name}")
+  String topic;
+
+  private final Map<String, String> mappingInfo =
+      new HashMap<>() {
+        {
+          put("CUSTOMER_NO", "cifBank");
+          put("CIF_WALLET", "cifWallet");
+          put("CUSTOMER_NAME", "customerName");
+          put("DATE_OF_BIRTH", "dob");
+          put("FULL_ADDRESS", "currentAddress");
+          put("USER_TYPE", "customerType");
+          put("SEX", "gender");
+          put("NATIONALITY_ID", "nationality");
+          put("BRANCH_CODE", "ownerBranch");
+          put("MOBILE_PHONE", "phone");
+          put("UNIQUE_ID", "uniqueType");
+          put("UNIQUE_VALUE", "uniqueValue");
+          put("DATE_OF_ISSUE", "issueDate");
+          put("PLACE_OF_ISSUE", "issuePlace");
+          put("REG_BRANCH", "registerBranch");
+          //            put("FULL_ADDRESS", "residentialAddress");
+          //            put("", "rank");
+          //            put("", "rmCode");
+          //            put("", "rmName");
+          //            put("", "segment");
+        }
+      };
 
   @SuppressWarnings("rawtypes")
   private final KafkaTemplate kafkaTemplate;
@@ -63,7 +95,8 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
       scheduleLog = scheduleLogRepository.save(scheduleLog);
     }
     try {
-      process();
+      var count = process();
+      if (count < Lv24hRepository.batchSize) finishJob(scheduleInfo);
       status = StatusJob.SUCCESS;
     } catch (Exception e) {
       msg = e.getMessage();
@@ -79,44 +112,19 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
   }
 
   @SuppressWarnings({"unchecked"})
-  private void process() {
+  private int process() {
     var list = lv24hRepository.selects(redisLastCus.get());
-    // TODO: 01/04/2024 if list <100 done
 
     var lastID = (BigDecimal) CollectionUtils.lastElement(list).get("CUSTOMER_ID");
     redisLastCus.put(lastID.longValue());
 
     var msgData = mappingData(list);
-    kafkaTemplate.send("CUSTOMER_CREATE_EVENT", JsonUtils.toJson(new MessageData<>(msgData)));
+    kafkaTemplate.send(topic, JsonUtils.toJson(new MessageData<>(msgData)));
+
+    return list.size();
   }
 
   private List<Map<String, Object>> mappingData(List<Map<String, Object>> list) {
-    var mapping =
-        new HashMap<String, String>() {
-          {
-            put("CUSTOMER_NO", "cifBank");
-            put("CIF_NO", "cifWallet");
-            put("CUSTOMER_NAME", "customerName");
-            put("DATE_OF_BIRTH", "dob");
-            put("FULL_ADDRESS", "currentAddress");
-            put("USER_TYPE", "customerType");
-            put("SEX", "gender");
-            put("NATIONALITY_ID", "nationality");
-            put("BRANCH_CODE", "ownerBranch");
-            put("MOBILE_PHONE", "phone");
-            put("UNIQUE_ID", "uniqueType");
-            put("UNIQUE_VALUE", "uniqueValue");
-            put("DATE_OF_ISSUE", "issueDate");
-            put("PLACE_OF_ISSUE", "issuePlace");
-//            put("REG_BRANCH", "registerBranch");
-            //            put("FULL_ADDRESS", "residentialAddress");
-            //            put("", "rank");
-            //            put("", "rmCode");
-            //            put("", "rmName");
-            //            put("", "segment");
-          }
-        };
-
     return list.stream()
         .map(
             map ->
@@ -126,12 +134,27 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
                         map.forEach(
                             (s, o) -> {
                               if (o != null) {
-                                var key = mapping.get(s);
+                                var key = mappingInfo.get(s);
                                 if (key != null) put(key, o);
                               }
                             });
                       }
                     })
         .toList();
+  }
+
+  private void finishJob(ScheduleInfo scheduleInfo) {
+    try {
+      JobKey jobKey = new JobKey(scheduleInfo.getJobName(), scheduleInfo.getJobGroup());
+      Scheduler scheduler = schedulerFactoryBean.getScheduler();
+      JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+      if (jobDetail == null) throw new BaseException(CommonErrorCode.BAD_REQUEST);
+
+      scheduler.deleteJob(jobKey);
+      scheduleInfo.setJobStatus(StatusJob.SUCCESS);
+      scheduleRepository.save(scheduleInfo);
+    } catch (SchedulerException e) {
+      throw new BaseException(new Object[] {scheduleInfo.getId()}, ErrorCode.JOB_NOT_EXISTED);
+    }
   }
 }

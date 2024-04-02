@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.common.repository;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,14 +12,13 @@ public class Lv24hRepository {
   public static final int batchSize = 100;
   private final JdbcTemplate template;
 
-  public Lv24hRepository() {
+  public Lv24hRepository(
+      @Value("${custom.lv24h.datasource.url}") String url,
+      @Value("${custom.lv24h.datasource.username}") String username,
+      @Value("${custom.lv24h.datasource.password}") String password) {
     template =
         new JdbcTemplate(
-            DataSourceBuilder.create()
-                .url("jdbc:oracle:thin:@10.36.209.95:1521:lv24uat2")
-                .username("ESMAC_VV_TE")
-                .password("esmac_vv_te")
-                .build());
+            DataSourceBuilder.create().url(url).username(username).password(password).build());
   }
 
   public List<Map<String, Object>> selects(long lastCustomerId) {
@@ -26,19 +26,17 @@ public class Lv24hRepository {
         String.format(
             """
                 SELECT cus.*,
-                    cc.CIF_NO,
+                	cc.CUST_NO CIF_WALLET,
                 	mu.USER_NAME,
                 	mu.CUST_NO, -- CIF NO
-                	--mu.REG_BRANCH,
                 	mu.DATE_OF_BIRTH,
                 	mu.SEX,
                 	mu.FULL_ADDRESS,
-                	mu.USER_TYPE, -- KHDN = 9
+                	mu.USER_TYPE , -- KHDN = 9
                 	mu.USER_STATUS FROM (
                 SELECT
                 	c.CUSTOMER_ID,
                 	c.CUSTOMER_NO,	--cif
-                	c.CUSTOMER_NAME,
                 	c.PACKAGE_DEFAULT , -- Goi Khach hang
                 	c.UNIQUE_ID, -- Loai giay to
                 	c.UNIQUE_VALUE, -- So giay to
@@ -47,6 +45,7 @@ public class Lv24hRepository {
                 	c.NATIONALITY_ID, -- Quoc tich
                 	c.MOBILE_PHONE, -- So dien thoai
                 	c.BRANCH_CODE,
+                	c.REG_BRANCH,
                 	firstU.USER_ID
                 from CUSTOMER c
                 join (
@@ -59,7 +58,7 @@ public class Lv24hRepository {
                 WHERE c.CUSTOMER_ID > %d AND ROWNUM <= %d
                 ORDER BY c.CUSTOMER_ID
                 ) cus JOIN MASTER_USER mu ON cus.USER_ID = mu.USER_ID
-                JOIN CORE_CUSTOMER cc ON cus.CUSTOMER_NO = cc.CUST_NO
+                JOIN CORE_CUSTOMER cc ON cus.CUSTOMER_NO = cc.CIF_NO
                 """,
             lastCustomerId, batchSize));
   }
