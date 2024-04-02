@@ -11,11 +11,12 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
+import vn.com.atomi.loyalty.base.event.RetriesMessageData;
+import vn.com.atomi.loyalty.base.redis.HistoryMessage;
+import vn.com.atomi.loyalty.base.redis.HistoryMessageRepository;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
-import vn.com.atomi.loyalty.common.entity.redis.HistoryKafkaMessage;
 import vn.com.atomi.loyalty.common.mapper.ModelMapper;
 import vn.com.atomi.loyalty.common.repository.RetriesMessageRepository;
-import vn.com.atomi.loyalty.common.repository.redis.HistoryKafkaMessageRepository;
 import vn.com.atomi.loyalty.common.utils.Utils;
 
 /**
@@ -26,13 +27,13 @@ import vn.com.atomi.loyalty.common.utils.Utils;
 @Component
 public class RetriesMessageListener {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MessageListener.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RetriesMessageListener.class);
 
   private final ModelMapper modelMapper = Mappers.getMapper(ModelMapper.class);
 
   private final RetriesMessageRepository retriesMessageRepository;
 
-  private final HistoryKafkaMessageRepository historyKafkaMessageRepository;
+  private final HistoryMessageRepository historyMessageRepository;
 
   @KafkaListener(
       topics = "${custom.properties.kafka.topic.retries-event.name}",
@@ -46,7 +47,8 @@ public class RetriesMessageListener {
       @Header(KafkaHeaders.OFFSET) String offset,
       Acknowledgment acknowledgment) {
     ThreadContext.put(RequestConstant.REQUEST_ID, Utils.generateUniqueId());
-    ThreadContext.put(RequestConstant.KAFKA_EVENT, topic);
+    ThreadContext.put(RequestConstant.BROKER_TYPE, RequestConstant.BROKER_KAFKA);
+    ThreadContext.put(RequestConstant.MESSAGE_EVENT, topic);
     LOGGER.info("[KafkaConsumer][{}][{}][{}] Incoming: {}", topic, partition, offset, data);
     RetriesMessageData input = JsonUtils.fromJson(data, RetriesMessageData.class);
     if (input == null) {
@@ -57,8 +59,8 @@ public class RetriesMessageListener {
     }
     try {
       if (Boolean.FALSE.equals(
-          historyKafkaMessageRepository.put(
-              topic, new HistoryKafkaMessage(input.getMessageId())))) {
+          historyMessageRepository.put(
+              new HistoryMessage(input.getMessageId(), topic, RequestConstant.BROKER_KAFKA)))) {
         LOGGER.warn(
             "[KafkaConsumer][{}][{}][{}]  message has been processed", topic, partition, offset);
         return;

@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.common.event;
+package vn.com.atomi.loyalty.base.event;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
-import vn.com.atomi.loyalty.common.entity.RetriesMessage;
 
 /**
  * @author haidv
@@ -45,14 +44,39 @@ public class MessageInterceptor {
         "End push message to queue: {} messageId: {}", retriesEventTopic, payload.getMessageId());
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void convertAndSend(String queueName, MessageData payload) {
+    var payloadJson = JsonUtils.toJson(payload);
+    LOGGER.info(
+        "Start push message to queue: {} messageId: {} with payload: {}",
+        queueName,
+        payload.getMessageId(),
+        payloadJson);
+    kafkaTemplate.send(queueName, payloadJson);
+    LOGGER.info("End push message to queue: {} messageId: {}", queueName, payload.getMessageId());
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  public void convertAndSend(String queueName, String key, MessageData payload) {
+    var payloadJson = JsonUtils.toJson(payload);
+    LOGGER.info(
+        "Start push message to queue: {} messageId: {} with payload: {}",
+        queueName,
+        payload.getMessageId(),
+        payloadJson);
+    kafkaTemplate.send(queueName, key, payloadJson);
+    LOGGER.info("End push message to queue: {} messageId: {}", queueName, payload.getMessageId());
+  }
+
   @SuppressWarnings({"unchecked"})
-  public void convertAndSend(RetriesMessage payload) {
+  public void convertAndSend(RetriesMessageData payload) {
+    var payloadJson = JsonUtils.toJson(payload);
     LOGGER.info(
         "Start push message to queue: {} messageId: {} with payload: {}",
         payload.getDestination(),
         payload.getMessageId(),
-        JsonUtils.toJson(payload));
-    kafkaTemplate.send(payload.getDestination(), payload.getMessageId(), JsonUtils.toJson(payload));
+        payloadJson);
+    kafkaTemplate.send(payload.getDestination(), payload.getRetryMessageId(), payloadJson);
     LOGGER.info(
         "End push message to queue: {} messageId: {}",
         payload.getDestination(),

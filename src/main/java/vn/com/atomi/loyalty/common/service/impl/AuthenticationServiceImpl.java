@@ -13,13 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.BaseService;
-import vn.com.atomi.loyalty.base.event.EventInfo;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
 import vn.com.atomi.loyalty.base.redis.CacheUserRepository;
@@ -34,8 +32,6 @@ import vn.com.atomi.loyalty.common.entity.Permission;
 import vn.com.atomi.loyalty.common.entity.Role;
 import vn.com.atomi.loyalty.common.entity.Session;
 import vn.com.atomi.loyalty.common.entity.User;
-import vn.com.atomi.loyalty.common.enums.ServiceEvent;
-import vn.com.atomi.loyalty.common.event.ExampleEventData;
 import vn.com.atomi.loyalty.common.mapper.ModelMapper;
 import vn.com.atomi.loyalty.common.repository.*;
 import vn.com.atomi.loyalty.common.repository.redis.LoginFailureCountRepository;
@@ -59,8 +55,6 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   private final TokenProvider tokenProvider;
 
   private final TokenBlackListRepository tokenBlackListRepository;
-
-  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Value("${custom.properties.security.system.setting.brute-force-detection}")
   private boolean bruteForceDetection;
@@ -98,11 +92,6 @@ public class AuthenticationServiceImpl extends BaseService implements Authentica
   @Transactional
   @Override
   public LoginOutput login(LoginInput input) {
-    applicationEventPublisher.publishEvent(
-        new EventInfo(
-            ExampleEventData.builder().example(UUID.randomUUID().toString()).build(),
-            false,
-            ServiceEvent.EXAMPLE));
     val user = validLogin(input);
 
     LoginOutput output = new LoginOutput();

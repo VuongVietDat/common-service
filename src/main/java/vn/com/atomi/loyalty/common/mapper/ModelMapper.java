@@ -3,12 +3,12 @@ package vn.com.atomi.loyalty.common.mapper;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import vn.com.atomi.loyalty.common.dto.output.DictionaryOutput;
+import vn.com.atomi.loyalty.base.event.RetriesMessageData;
 import vn.com.atomi.loyalty.base.security.PermissionOutput;
 import vn.com.atomi.loyalty.base.security.RoleOutput;
 import vn.com.atomi.loyalty.base.security.UserOutput;
+import vn.com.atomi.loyalty.common.dto.output.DictionaryOutput;
 import vn.com.atomi.loyalty.common.entity.*;
-import vn.com.atomi.loyalty.common.event.RetriesMessageData;
 
 /**
  * @author haidv
@@ -27,4 +27,8 @@ public interface ModelMapper {
   PermissionOutput toPermissionOutput(Permission permission);
 
   List<DictionaryOutput> convertToDictionaryOutputs(List<Dictionary> dictionaries);
+
+  @Mapping(source = "messageId", target = "retryMessageId")
+  @Mapping(target = "messageId", ignore = true)
+  RetriesMessageData convertToRetriesMessageData(RetriesMessage retriesMessage);
 }

@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.common.service.job;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.ThreadContext;
+import org.mapstruct.factory.Mappers;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.slf4j.Logger;
@@ -10,12 +11,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
+import vn.com.atomi.loyalty.base.event.MessageInterceptor;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.common.entity.ScheduleInfo;
 import vn.com.atomi.loyalty.common.entity.ScheduleLog;
 import vn.com.atomi.loyalty.common.enums.ErrorCode;
 import vn.com.atomi.loyalty.common.enums.StatusJob;
-import vn.com.atomi.loyalty.common.event.MessageInterceptor;
+import vn.com.atomi.loyalty.common.mapper.ModelMapper;
 import vn.com.atomi.loyalty.common.repository.RetriesMessageRepository;
 import vn.com.atomi.loyalty.common.repository.ScheduleLogRepository;
 import vn.com.atomi.loyalty.common.repository.ScheduleRepository;
@@ -38,6 +40,8 @@ public class HandleRetriesMessageJob extends QuartzJobBean {
   private final RetriesMessageRepository retriesMessageRepository;
 
   private final MessageInterceptor messageInterceptor;
+
+  protected ModelMapper modelMapper = Mappers.getMapper(ModelMapper.class);
 
   @Override
   protected void executeInternal(JobExecutionContext context) {
@@ -64,7 +68,8 @@ public class HandleRetriesMessageJob extends QuartzJobBean {
     try {
       retriesMessageRepository
           .findByRetriesActivated(LocalDateTime.now())
-          .forEach(messageInterceptor::convertAndSend);
+          .forEach(
+              v -> messageInterceptor.convertAndSend(modelMapper.convertToRetriesMessageData(v)));
       status = StatusJob.SUCCESS;
     } catch (Exception e) {
       msg = e.getMessage();
