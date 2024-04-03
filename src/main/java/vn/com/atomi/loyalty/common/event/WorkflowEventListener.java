@@ -6,6 +6,8 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import vn.com.atomi.loyalty.base.event.BaseRetriesMessageListener;
+import vn.com.atomi.loyalty.base.event.MessageData;
 
 /**
  * @author haidv
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 @SuppressWarnings({"rawtypes"})
 @RequiredArgsConstructor
 @Component
-public class WorkflowEventListener extends MessageListener<LinkedHashMap> {
+public class WorkflowEventListener extends BaseRetriesMessageListener<LinkedHashMap> {
 
   //  @KafkaListener(
   //      topics = "${custom.properties.kafka.topic.workflow-event.name}",

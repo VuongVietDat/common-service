@@ -33,9 +33,4 @@ public class ServiceDrivenEventListener extends DrivenEventListener {
 
   @Override
   protected void processLogHandleEventAsync(EventInfo eventInfo) {}
-
-  @SuppressWarnings("unused")
-  public void example(ExampleEventData exampleEventData) {
-    LOGGER.info(exampleEventData.getExample());
-  }
 }

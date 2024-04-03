@@ -30,21 +30,21 @@ public abstract class BaseEntity implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @CreatedDate
-  @Column(name = "created_at")
+  @Column(name = "CREATED_AT")
   private LocalDateTime createdAt;
 
   @LastModifiedDate
-  @Column(name = "updated_at")
+  @Column(name = "UPDATED_AT")
   private LocalDateTime updatedAt;
 
   @CreatedBy
-  @Column(name = "created_by")
+  @Column(name = "CREATED_BY")
   private String createdBy;
 
   @LastModifiedBy
-  @Column(name = "updated_by")
+  @Column(name = "UPDATED_BY")
   private String updatedBy;
 
-  @Column(name = "is_deleted")
+  @Column(name = "IS_DELETED")
   private boolean deleted = false;
 }

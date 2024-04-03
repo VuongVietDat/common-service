@@ -19,7 +19,13 @@ public class RequestConstant {
 
   public static final String LOCAL_IP = "X-Local-IP";
 
-  public static final String KAFKA_EVENT = "KafkaListenerEvent";
+  public static final String MESSAGE_EVENT = "MessageListenerEvent";
+
+  public static final String BROKER_TYPE = "EventBrokerType";
+
+  public static final String BROKER_KAFKA = "KAFKA";
+
+  public static final String BROKER_RABBIT = "RABBIT";
 
   public static final String SERVICE_NAME = "service-name";
 

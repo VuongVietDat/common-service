@@ -1,15 +1,14 @@
 package vn.com.atomi.loyalty.common.repository.redis;
 
+import java.time.Duration;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Repository;
-
-import java.time.Duration;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Repository
 @RequiredArgsConstructor

@@ -1,9 +1,9 @@
-package vn.com.atomi.loyalty.common.event;
+package vn.com.atomi.loyalty.base.event;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.atomi.loyalty.common.utils.Utils;
 
 /**
  * @author haidv
@@ -36,7 +36,7 @@ public class RetriesMessageData {
   private RetriesMessageDataStatus status;
 
   public RetriesMessageData() {
-    this.messageId = Utils.generateUniqueId();
+    this.messageId = UUID.randomUUID().toString();
     this.retriesNo = 1;
     this.status = RetriesMessageDataStatus.INSERT;
   }
@@ -53,7 +53,7 @@ public class RetriesMessageData {
   }
 
   public RetriesMessageData incrementRetriesNo() {
-    this.messageId = Utils.generateUniqueId();
+    this.messageId = UUID.randomUUID().toString();
     this.retriesNo = this.retriesNo + 1;
     this.data = null;
     this.source = null;
@@ -66,7 +66,7 @@ public class RetriesMessageData {
   }
 
   public RetriesMessageData deleteRetries() {
-    this.messageId = Utils.generateUniqueId();
+    this.messageId = UUID.randomUUID().toString();
     this.retriesNo = null;
     this.data = null;
     this.source = null;

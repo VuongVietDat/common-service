@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.common.entity.redis;
+package vn.com.atomi.loyalty.base.redis;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,12 +13,16 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class HistoryKafkaMessage implements Serializable {
+public class HistoryMessage implements Serializable {
   private String messageId;
+  private String destination;
+  private String brokerType;
   private LocalDateTime consumeAt;
 
-  public HistoryKafkaMessage(String messageId) {
+  public HistoryMessage(String messageId, String destination, String brokerType) {
     this.messageId = messageId;
     this.consumeAt = LocalDateTime.now();
+    this.destination = destination;
+    this.brokerType = brokerType;
   }
 }
