@@ -12,6 +12,45 @@ public class Lv24hRepository {
   public static final int batchSize = 100;
   private final JdbcTemplate template;
 
+  private static final String pattern =
+      """
+              SELECT cus.*,
+                  cc.CUST_NO CIF_WALLET,
+                  mu.USER_NAME,
+                  mu.CUST_NO, -- CIF NO
+                  mu.DATE_OF_BIRTH,
+                  mu.SEX,
+                  mu.FULL_ADDRESS,
+                  mu.USER_TYPE , -- KHDN = 9
+                  mu.USER_STATUS FROM (
+              SELECT
+                  c.CUSTOMER_ID,
+                  c.CUSTOMER_NO,	--cif
+                  c.CUSTOMER_NAME,	--cif
+                  c.PACKAGE_DEFAULT , -- Goi Khach hang
+                  c.UNIQUE_ID, -- Loai giay to
+                  c.UNIQUE_VALUE, -- So giay to
+                  c.DATE_OF_ISSUE, -- Ngay cap
+                  c.PLACE_OF_ISSUE, -- Noi cap
+                  c.NATIONALITY_ID, -- Quoc tich
+                  c.MOBILE_PHONE, -- So dien thoai
+                  c.BRANCH_CODE,
+                  c.REG_BRANCH,
+                  firstU.USER_ID
+              from CUSTOMER c
+              join (
+                  select CUST_NO, max(USER_ID) USER_ID
+                  from MASTER_USER
+                  WHERE USER_STATUS != 'C'
+                  group by CUST_NO
+                  ) firstU
+              on (firstU.CUST_NO = c.CUSTOMER_NO)
+              WHERE c.CUSTOMER_ID > %d AND ROWNUM <= %d
+              ORDER BY c.CUSTOMER_ID
+              ) cus JOIN MASTER_USER mu ON cus.USER_ID = mu.USER_ID
+              JOIN CORE_CUSTOMER cc ON cus.CUSTOMER_NO = cc.CIF_NO
+              """;
+
   public Lv24hRepository(
       @Value("${custom.lv24h.datasource.url}") String url,
       @Value("${custom.lv24h.datasource.username}") String username,
@@ -22,45 +61,6 @@ public class Lv24hRepository {
   }
 
   public List<Map<String, Object>> selects(long lastCustomerId) {
-    return template.queryForList(
-        String.format(
-            """
-                SELECT cus.*,
-                	cc.CUST_NO CIF_WALLET,
-                	mu.USER_NAME,
-                	mu.CUST_NO, -- CIF NO
-                	mu.DATE_OF_BIRTH,
-                	mu.SEX,
-                	mu.FULL_ADDRESS,
-                	mu.USER_TYPE , -- KHDN = 9
-                	mu.USER_STATUS FROM (
-                SELECT
-                	c.CUSTOMER_ID,
-                	c.CUSTOMER_NO,	--cif
-                	c.CUSTOMER_NAME,	--cif
-                	c.PACKAGE_DEFAULT , -- Goi Khach hang
-                	c.UNIQUE_ID, -- Loai giay to
-                	c.UNIQUE_VALUE, -- So giay to
-                	c.DATE_OF_ISSUE, -- Ngay cap
-                	c.PLACE_OF_ISSUE, -- Noi cap
-                	c.NATIONALITY_ID, -- Quoc tich
-                	c.MOBILE_PHONE, -- So dien thoai
-                	c.BRANCH_CODE,
-                	c.REG_BRANCH,
-                	firstU.USER_ID
-                from CUSTOMER c
-                join (
-                    select CUST_NO, max(USER_ID) USER_ID
-                    from MASTER_USER
-                    WHERE USER_STATUS != 'C'
-                    group by CUST_NO
-                    ) firstU
-                on (firstU.CUST_NO = c.CUSTOMER_NO)
-                WHERE c.CUSTOMER_ID > %d AND ROWNUM <= %d
-                ORDER BY c.CUSTOMER_ID
-                ) cus JOIN MASTER_USER mu ON cus.USER_ID = mu.USER_ID
-                JOIN CORE_CUSTOMER cc ON cus.CUSTOMER_NO = cc.CIF_NO
-                """,
-            lastCustomerId, batchSize));
+    return template.queryForList(String.format(pattern, lastCustomerId, batchSize));
   }
 }

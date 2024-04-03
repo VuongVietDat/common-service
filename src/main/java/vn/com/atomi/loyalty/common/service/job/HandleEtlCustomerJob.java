@@ -101,7 +101,7 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
     }
     try {
       var count = process();
-      /*if (count < Lv24hRepository.batchSize)*/ finishJob(scheduleInfo);
+      if (count < Lv24hRepository.batchSize) finishJob(scheduleInfo);
       status = StatusJob.SUCCESS;
     } catch (Exception e) {
       msg = e.getMessage();
@@ -115,6 +115,30 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
       scheduleRepository.updateLstExecuteAt(LocalDateTime.now(), scheduleInfo.getId());
     }
   }
+
+  /*public void test() {
+    new Thread(
+            () -> {
+              var lastId = BigDecimal.valueOf(0);
+              var count = 0;
+              var size = 0;
+              do {
+                count++;
+                var list = lv24hRepository.selects(lastId.longValue());
+                size = list.size();
+                lastId = (BigDecimal) CollectionUtils.lastElement(list).get("CUSTOMER_ID");
+
+                System.out.printf("\nzxc %d | %d | %d", count, size, lastId.longValue());
+              } while (size == Lv24hRepository.batchSize);
+              System.out.println("\nzxc done");
+              *//*
+              zxc 687 | 100 | 317588
+              zxc 688 | 33 | 522726
+              zxc done
+              *//*
+            })
+        .start();
+  }*/
 
   @SuppressWarnings({"unchecked"})
   private int process() {
