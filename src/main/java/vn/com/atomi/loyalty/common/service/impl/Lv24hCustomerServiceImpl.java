@@ -15,6 +15,7 @@ import vn.com.atomi.loyalty.common.repository.Lv24hRepository;
 import vn.com.atomi.loyalty.common.repository.redis.EtlLastCustomerRepository;
 import vn.com.atomi.loyalty.common.service.Lv24hCustomerService;
 
+@SuppressWarnings({"unchecked"})
 @Service
 @RequiredArgsConstructor
 public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustomerService {
@@ -28,7 +29,6 @@ public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustom
   @Value("${custom.properties.kafka.topic.customer-create.name}")
   String topicCreate;
 
-  @SuppressWarnings({"unchecked"})
   @Override
   public int etl() {
     var list = lv24hRepository.selects(redisLastCus.get());
@@ -42,7 +42,6 @@ public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustom
     return list.size();
   }
 
-  @SuppressWarnings({"unchecked"})
   @Override
   public void syncFromQueue(Lv24hCustomerMessage message, String messageId) {
     var kafkaMsg = customerMapper.fromQueue(message);
