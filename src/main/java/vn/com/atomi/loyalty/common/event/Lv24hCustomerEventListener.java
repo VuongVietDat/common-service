@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.common.event;
 
 import java.util.LinkedHashMap;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -42,8 +43,10 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
       ThreadContext.clearAll();
       return;
     }
-    var messageId = "";
-    // String.format("%s_%s_%s", queue, timestamp, input.getTransactionHeader().getTransCode());
+    var messageId = input.getMessageId();
+    if (StringUtils.isBlank(messageId))
+      messageId = String.format("%s_%s_%s", queue, timestamp, input.getCustNo());
+
     try {
       if (Boolean.FALSE.equals(
           super.historyMessageRepository.put(
@@ -78,7 +81,9 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
     super.messageRetriesListener(data, topic, partition, offset, acknowledgment);
   }
 
-  private void handleMessageEvent(Lv24hCustomerMessage input, String messageId) {}
+  private void handleMessageEvent(Lv24hCustomerMessage input, String messageId) {
+    LOGGER.info("zxc {} | {}", messageId, input);
+  }
 
   @Override
   protected void handleMessageEvent(
@@ -87,5 +92,7 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
       String offset,
       MessageData<LinkedHashMap> input,
       String messageId) {
+    handleMessageEvent(
+        JsonUtils.fromJson(input.getContents(), Lv24hCustomerMessage.class), messageId);
   }
 }
