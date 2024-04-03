@@ -19,6 +19,7 @@ public class Lv24hCustomerMessage {
   private String branchCode;
   private String regBranch;
   private String address;
+  private String userType;
   private String uniqueId;
   private String uniqueValue;
   private String dateOfIssue;

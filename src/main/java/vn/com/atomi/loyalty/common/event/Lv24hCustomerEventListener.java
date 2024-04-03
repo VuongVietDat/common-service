@@ -17,6 +17,7 @@ import vn.com.atomi.loyalty.base.event.RetriesMessageData;
 import vn.com.atomi.loyalty.base.redis.HistoryMessage;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
 import vn.com.atomi.loyalty.common.dto.message.Lv24hCustomerMessage;
+import vn.com.atomi.loyalty.common.service.Lv24hCustomerService;
 import vn.com.atomi.loyalty.common.utils.Utils;
 
 /**
@@ -27,6 +28,7 @@ import vn.com.atomi.loyalty.common.utils.Utils;
 @RequiredArgsConstructor
 @Component
 public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<LinkedHashMap> {
+  private final Lv24hCustomerService lv24hCustomerService;
 
   @RabbitListener(queues = "${custom.properties.rabbitmq.queue.lv24h-customer-event.name}")
   public void lv24hTransactionEvent(
@@ -82,7 +84,7 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
   }
 
   private void handleMessageEvent(Lv24hCustomerMessage input, String messageId) {
-    LOGGER.info("zxc {} | {}", messageId, input);
+    lv24hCustomerService.syncFromQueue(input, messageId);
   }
 
   @Override
