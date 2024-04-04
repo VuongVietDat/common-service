@@ -83,10 +83,6 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
     super.messageRetriesListener(data, topic, partition, offset, acknowledgment);
   }
 
-  private void handleMessageEvent(Lv24hCustomerMessage input, String messageId) {
-    lv24hCustomerService.syncFromQueue(input, messageId);
-  }
-
   @Override
   protected void handleMessageEvent(
       String topic,
@@ -96,5 +92,9 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
       String messageId) {
     handleMessageEvent(
         JsonUtils.fromJson(input.getContents(), Lv24hCustomerMessage.class), messageId);
+  }
+
+  private void handleMessageEvent(Lv24hCustomerMessage input, String messageId) {
+    lv24hCustomerService.syncFromQueue(input, messageId);
   }
 }
