@@ -18,7 +18,6 @@ import vn.com.atomi.loyalty.common.service.ScheduleService;
 @RequiredArgsConstructor
 @RestController
 public class ScheduleController extends BaseController {
-
   private final ScheduleService scheduleService;
 
   @Operation(summary = "Bắt đầu một tiến trình")

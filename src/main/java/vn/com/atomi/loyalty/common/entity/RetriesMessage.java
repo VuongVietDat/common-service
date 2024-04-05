@@ -30,6 +30,7 @@ public class RetriesMessage extends BaseEntity {
   @Column(name = "message_id")
   private String messageId;
 
+  @Lob
   @Column(name = "data")
   private String data;
 

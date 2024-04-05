@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.common.event;
 
 import java.util.LinkedHashMap;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.ThreadContext;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,6 +17,7 @@ import vn.com.atomi.loyalty.base.event.RetriesMessageData;
 import vn.com.atomi.loyalty.base.redis.HistoryMessage;
 import vn.com.atomi.loyalty.base.utils.JsonUtils;
 import vn.com.atomi.loyalty.common.dto.message.Lv24hCustomerMessage;
+import vn.com.atomi.loyalty.common.service.Lv24hCustomerService;
 import vn.com.atomi.loyalty.common.utils.Utils;
 
 /**
@@ -26,6 +28,7 @@ import vn.com.atomi.loyalty.common.utils.Utils;
 @RequiredArgsConstructor
 @Component
 public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<LinkedHashMap> {
+  private final Lv24hCustomerService lv24hCustomerService;
 
   @RabbitListener(queues = "${custom.properties.rabbitmq.queue.lv24h-customer-event.name}")
   public void lv24hTransactionEvent(
@@ -42,8 +45,10 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
       ThreadContext.clearAll();
       return;
     }
-    var messageId = "";
-    // String.format("%s_%s_%s", queue, timestamp, input.getTransactionHeader().getTransCode());
+    var messageId = input.getMessageId();
+    if (StringUtils.isBlank(messageId))
+      messageId = String.format("%s_%s_%s", queue, timestamp, input.getCustNo());
+
     try {
       if (Boolean.FALSE.equals(
           super.historyMessageRepository.put(
@@ -78,8 +83,6 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
     super.messageRetriesListener(data, topic, partition, offset, acknowledgment);
   }
 
-  private void handleMessageEvent(Lv24hCustomerMessage input, String messageId) {}
-
   @Override
   protected void handleMessageEvent(
       String topic,
@@ -87,5 +90,11 @@ public class Lv24hCustomerEventListener extends BaseRetriesMessageListener<Linke
       String offset,
       MessageData<LinkedHashMap> input,
       String messageId) {
+    handleMessageEvent(
+        JsonUtils.fromJson(input.getContents(), Lv24hCustomerMessage.class), messageId);
+  }
+
+  private void handleMessageEvent(Lv24hCustomerMessage input, String messageId) {
+    lv24hCustomerService.syncFromQueue(input, messageId);
   }
 }
