@@ -6,7 +6,15 @@ package vn.com.atomi.loyalty.common.utils;
  */
 public class Constants {
 
-  public static final String PLUS_LOYALTY_TYPE_NOTIFICATION = "PLUS_LOYALTY";
+  public static final String SOURCE_TYPE_CUSTOMER_TYPE = "CUSTOMER_TYPE";
+
+  public static final String SOURCE_TYPE_NATIONALITY = "NATIONALITY";
+
+  public static final String SOURCE_TYPE_UNIQUE_TYPE = "UNIQUE_TYPE";
+
+  public static final String SOURCE_TYPE_GENDER = "GENDER";
+
+  public static final int BATCH_SIZE = 100;
 
   private Constants() {
     throw new IllegalStateException("Utility class");

@@ -9,17 +9,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.ThreadContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.event.MessageData;
 import vn.com.atomi.loyalty.base.event.MessageInterceptor;
 import vn.com.atomi.loyalty.common.dto.message.Lv24hCustomerMessage;
+import vn.com.atomi.loyalty.common.dto.output.SourceDataMapOutput;
 import vn.com.atomi.loyalty.common.enums.EventAction;
+import vn.com.atomi.loyalty.common.enums.SourceGroup;
+import vn.com.atomi.loyalty.common.feign.LoyaltyConfigClient;
 import vn.com.atomi.loyalty.common.repository.Lv24hRepository;
 import vn.com.atomi.loyalty.common.repository.redis.EtlLastCustomerRepository;
 import vn.com.atomi.loyalty.common.service.Lv24hCustomerService;
+import vn.com.atomi.loyalty.common.utils.Constants;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +64,8 @@ public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustom
 
   private final MessageInterceptor messageInterceptor;
 
+  private final LoyaltyConfigClient loyaltyConfigClient;
+
   @Value("${custom.properties.kafka.topic.customer-create.name}")
   String topicCreate;
 
@@ -71,11 +79,24 @@ public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustom
   public int etl() {
     // load data from
     var list = lv24hRepository.selects(redisLastCus.get());
+    if (list.isEmpty()) {
+      return 0;
+    }
 
     var lastID = (BigDecimal) CollectionUtils.lastElement(list).get("CUSTOMER_ID");
     redisLastCus.put(lastID.longValue());
 
     var msgData = this.fromOracleDb(list);
+
+    var maps =
+        loyaltyConfigClient
+            .getAllSourceDataMap(ThreadContext.get(RequestConstant.REQUEST_ID), SourceGroup.LV24H)
+            .getData();
+
+    for (Map<String, Object> msgDatum : msgData) {
+      this.mapDataLoyalty(msgDatum, maps);
+    }
+
     messageInterceptor.convertAndSend(topicCreate, new MessageData<>(msgData));
 
     return list.size();
@@ -100,6 +121,12 @@ public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustom
 
     // mapping and publish msg
     var kafkaMsg = this.fromQueue(message);
+
+    var maps =
+        loyaltyConfigClient
+            .getAllSourceDataMap(ThreadContext.get(RequestConstant.REQUEST_ID), SourceGroup.LV24H)
+            .getData();
+    this.mapDataLoyalty(kafkaMsg, maps);
     messageInterceptor.convertAndSend(topic, messageId, new MessageData<>(kafkaMsg));
   }
 
@@ -130,7 +157,7 @@ public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustom
       {
         put("cifBank", message.getCustNo());
         //        put( "cifWallet",message.);
-        //        put("CUSTOMER_NAME", "customerName");
+        put("customerName", message.getFullName());
         put("currentAddress", message.getAddress());
         put("customerType", message.getUserType());
         put("gender", message.getSex());
@@ -149,5 +176,58 @@ public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustom
         if (bod != null) put("DATE_OF_BIRTH", dateFormat.format(bod));*/
       }
     };
+  }
+
+  private void mapDataLoyalty(Map<String, Object> msgDatum, List<SourceDataMapOutput> maps) {
+    if (msgDatum.get("customerType") != null) {
+      maps.stream()
+          .filter(
+              v ->
+                  Constants.SOURCE_TYPE_CUSTOMER_TYPE.equals(v.getSourceType())
+                      && v.getSourceId().equals(msgDatum.get("customerType").toString()))
+          .findFirst()
+          .ifPresentOrElse(
+              sourceDataMapOutput ->
+                  msgDatum.put("customerType", sourceDataMapOutput.getDestinationCode()),
+              () -> msgDatum.put("customerType", null));
+    }
+    if (msgDatum.get("nationality") != null) {
+      maps.stream()
+          .filter(
+              v ->
+                  Constants.SOURCE_TYPE_NATIONALITY.equals(v.getSourceType())
+                      && v.getSourceId().equals(msgDatum.get("nationality").toString()))
+          .findFirst()
+          .ifPresentOrElse(
+              sourceDataMapOutput ->
+                  msgDatum.put("nationality", sourceDataMapOutput.getDestinationCode()),
+              () -> msgDatum.put("nationality", null));
+    }
+
+    if (msgDatum.get("uniqueType") != null) {
+      maps.stream()
+          .filter(
+              v ->
+                  Constants.SOURCE_TYPE_UNIQUE_TYPE.equals(v.getSourceType())
+                      && v.getSourceId().equals(msgDatum.get("uniqueType").toString()))
+          .findFirst()
+          .ifPresentOrElse(
+              sourceDataMapOutput ->
+                  msgDatum.put("uniqueType", sourceDataMapOutput.getDestinationCode()),
+              () -> msgDatum.put("uniqueType", null));
+    }
+
+    if (msgDatum.get("gender") != null) {
+      maps.stream()
+          .filter(
+              v ->
+                  Constants.SOURCE_TYPE_GENDER.equals(v.getSourceType())
+                      && v.getSourceId().equals(msgDatum.get("gender").toString()))
+          .findFirst()
+          .ifPresentOrElse(
+              sourceDataMapOutput ->
+                  msgDatum.put("gender", sourceDataMapOutput.getDestinationCode()),
+              () -> msgDatum.put("gender", null));
+    }
   }
 }

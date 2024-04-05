@@ -12,6 +12,7 @@ public class Lv24hCustomerMessage {
   private EventAction action;
   private String messageId;
   private String userName;
+  private String fullName;
   private String custNo;
   private String mobilePhone;
   private String dateOfBirth;
