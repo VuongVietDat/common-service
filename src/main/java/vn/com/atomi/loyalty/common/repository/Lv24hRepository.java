@@ -45,10 +45,10 @@ public class Lv24hRepository {
                   group by CUST_NO
                   ) firstU
               on firstU.CUST_NO = c.CUSTOMER_NO
+              ORDER BY c.CUSTOMER_ID
               ) cus JOIN MASTER_USER mu ON cus.USER_ID = mu.USER_ID
               JOIN CORE_CUSTOMER cc ON cus.CUSTOMER_NO = cc.CIF_NO
               WHERE CUSTOMER_ID > %d AND ROWNUM <= %d
-              ORDER BY CUSTOMER_ID
               """;
 
   public Lv24hRepository(

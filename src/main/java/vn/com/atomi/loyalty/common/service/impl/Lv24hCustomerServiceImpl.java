@@ -1,10 +1,8 @@
 package vn.com.atomi.loyalty.common.service.impl;
 
-import static vn.com.atomi.loyalty.base.constant.DateConstant.STR_PLAN_DD_MM_YYYY_STROKE;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +29,6 @@ import vn.com.atomi.loyalty.common.utils.Constants;
 @RequiredArgsConstructor
 public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustomerService {
 
-  private final SimpleDateFormat dateFormat = new SimpleDateFormat(STR_PLAN_DD_MM_YYYY_STROKE);
   private final Map<String, String> mappingInfo =
       new HashMap<>() {
         {
@@ -142,7 +139,7 @@ public class Lv24hCustomerServiceImpl extends BaseService implements Lv24hCustom
                               if (o != null) {
                                 var key = mappingInfo.get(s);
                                 if (key != null) {
-                                  if (o instanceof Timestamp ts) o = dateFormat.format(ts);
+                                  if (o instanceof Timestamp ts) o = ts.toString();
                                   put(key, o);
                                 }
                               }
