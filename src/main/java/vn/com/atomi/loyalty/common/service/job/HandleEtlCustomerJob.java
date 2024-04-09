@@ -15,10 +15,10 @@ import vn.com.atomi.loyalty.common.entity.ScheduleInfo;
 import vn.com.atomi.loyalty.common.entity.ScheduleLog;
 import vn.com.atomi.loyalty.common.enums.ErrorCode;
 import vn.com.atomi.loyalty.common.enums.StatusJob;
-import vn.com.atomi.loyalty.common.repository.Lv24hRepository;
 import vn.com.atomi.loyalty.common.repository.ScheduleLogRepository;
 import vn.com.atomi.loyalty.common.repository.ScheduleRepository;
 import vn.com.atomi.loyalty.common.service.Lv24hCustomerService;
+import vn.com.atomi.loyalty.common.utils.Constants;
 import vn.com.atomi.loyalty.common.utils.Utils;
 
 @Slf4j
@@ -54,7 +54,7 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
     }
     try {
       var count = lv24hCustomerService.etl();
-      if (count < Lv24hRepository.batchSize) finishJob(scheduleInfo);
+      if (count < Constants.BATCH_SIZE) finishJob(scheduleInfo);
       status = StatusJob.SUCCESS;
     } catch (Exception e) {
       msg = e.getMessage();
@@ -77,7 +77,7 @@ public class HandleEtlCustomerJob extends QuartzJobBean {
       if (jobDetail == null) throw new BaseException(CommonErrorCode.BAD_REQUEST);
 
       scheduler.deleteJob(jobKey);
-      scheduleInfo.setJobStatus(StatusJob.SUCCESS);
+      scheduleInfo.setJobStatus(StatusJob.STOPPED);
       scheduleRepository.save(scheduleInfo);
     } catch (SchedulerException e) {
       throw new BaseException(new Object[] {scheduleInfo.getId()}, ErrorCode.JOB_NOT_EXISTED);

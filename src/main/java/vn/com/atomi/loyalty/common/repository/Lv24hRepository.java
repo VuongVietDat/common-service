@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import vn.com.atomi.loyalty.common.utils.Constants;
 
 @Repository
 public class Lv24hRepository {
-  public static final int batchSize = 100;
   private final JdbcTemplate template;
 
   private static final String pattern =
@@ -61,6 +61,6 @@ public class Lv24hRepository {
   }
 
   public List<Map<String, Object>> selects(long lastCustomerId) {
-    return template.queryForList(String.format(pattern, lastCustomerId, batchSize));
+    return template.queryForList(String.format(pattern, lastCustomerId, Constants.BATCH_SIZE));
   }
 }
