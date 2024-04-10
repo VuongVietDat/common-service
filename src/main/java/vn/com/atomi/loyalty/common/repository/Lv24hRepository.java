@@ -44,7 +44,7 @@ public class Lv24hRepository {
                   WHERE USER_STATUS != 'C'
                   group by CUST_NO
                   ) firstU
-              on (firstU.CUST_NO = c.CUSTOMER_NO)
+              on firstU.CUST_NO = c.CUSTOMER_NO
               ORDER BY c.CUSTOMER_ID
               ) cus JOIN MASTER_USER mu ON cus.USER_ID = mu.USER_ID
               JOIN CORE_CUSTOMER cc ON cus.CUSTOMER_NO = cc.CIF_NO
