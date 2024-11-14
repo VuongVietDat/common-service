@@ -2,10 +2,6 @@ package vn.com.atomi.loyalty.common.repository;
 
 import java.util.List;
 import java.util.Map;
-
-import org.apache.kafka.common.protocol.types.Field;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -65,10 +61,6 @@ public class Lv24hRepository {
   }
 
   public List<Map<String, Object>> selects(long lastCustomerId) {
-    Logger logger = LoggerFactory.getLogger(Lv24hRepository.class);
-    String query = String.format(pattern, lastCustomerId, Constants.BATCH_SIZE);
-    List<Map<String, Object>> results = template.queryForList(query);
-    logger.info("Query executed successfully. Number of records fetched: {}", results.size());
-    return results;
+    return template.queryForList(String.format(pattern, lastCustomerId, Constants.BATCH_SIZE));
   }
 }
