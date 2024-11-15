@@ -1,6 +1,8 @@
 package vn.com.atomi.loyalty.common.service.impl;
 
 import java.util.Date;
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
 import org.springframework.scheduling.quartz.QuartzJobBean;
@@ -9,9 +11,11 @@ import org.springframework.stereotype.Service;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
+import vn.com.atomi.loyalty.common.dto.output.CustomerCasa;
 import vn.com.atomi.loyalty.common.entity.ScheduleInfo;
 import vn.com.atomi.loyalty.common.enums.ErrorCode;
 import vn.com.atomi.loyalty.common.enums.StatusJob;
+import vn.com.atomi.loyalty.common.feign.LoyaltyCollectDataClient;
 import vn.com.atomi.loyalty.common.repository.ScheduleRepository;
 import vn.com.atomi.loyalty.common.service.ScheduleService;
 
@@ -29,9 +33,14 @@ public class ScheduleServiceImpl extends BaseService implements ScheduleService 
 
   private final JobScheduleCreator scheduleCreator;
 
+  private final LoyaltyCollectDataClient loyaltyCollectDataClient;
+
   @Override
   @SuppressWarnings("unchecked")
   public void startJobNow(Long id) throws SchedulerException, ClassNotFoundException {
+
+    List<CustomerCasa> customerCasas = loyaltyCollectDataClient.getLstCurrentCasa().getData();
+
     ScheduleInfo scheduleInfo =
         scheduleRepository
             .findByIdAndDeletedFalse(id)
