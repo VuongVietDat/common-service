@@ -1,6 +1,5 @@
 package vn.com.atomi.loyalty.common.feign.fallback;
 
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -11,6 +10,8 @@ import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
 import vn.com.atomi.loyalty.common.dto.output.SourceDataMapOutput;
 import vn.com.atomi.loyalty.common.enums.SourceGroup;
 import vn.com.atomi.loyalty.common.feign.LoyaltyConfigClient;
+
+import java.util.List;
 
 /**
  * @author haidv

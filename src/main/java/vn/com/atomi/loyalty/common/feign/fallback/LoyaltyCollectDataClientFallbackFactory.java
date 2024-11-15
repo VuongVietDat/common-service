@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.data.ResponseData;
-import vn.com.atomi.loyalty.base.exception.BaseException;
-import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
 import vn.com.atomi.loyalty.common.dto.output.CustomerCasa;
 import vn.com.atomi.loyalty.common.feign.LoyaltyCollectDataClient;
 
