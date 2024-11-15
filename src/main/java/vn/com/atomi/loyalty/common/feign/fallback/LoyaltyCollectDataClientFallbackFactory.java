@@ -10,6 +10,7 @@ import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
 import vn.com.atomi.loyalty.common.dto.output.CustomerCasa;
 import vn.com.atomi.loyalty.common.feign.LoyaltyCollectDataClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,8 +27,9 @@ public class LoyaltyCollectDataClientFallbackFactory implements FallbackFactory<
     LOGGER.error("An exception occurred when calling the LoyaltyCollectDataClient", cause);
     return new LoyaltyCollectDataClient() {
       @Override
-      public ResponseData<List<CustomerCasa>> getLstCurrentCasa() {
-        throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
+      public ResponseData<List<CustomerCasa>> getLstCurrentCasa(String requestId) {
+        LOGGER.info("getLstCurrentCasa: set default empty array");
+        return new ResponseData<List<CustomerCasa>>().success(new ArrayList<>());
       }
     };
   }

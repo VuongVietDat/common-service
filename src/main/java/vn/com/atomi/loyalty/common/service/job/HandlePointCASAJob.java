@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
+import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.common.dto.output.CustomerCasa;
 import vn.com.atomi.loyalty.common.feign.LoyaltyCollectDataClient;
 
@@ -25,6 +26,6 @@ public class HandlePointCASAJob extends QuartzJobBean {
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
-        List<CustomerCasa> customerCasas = loyaltyCollectDataClient.getLstCurrentCasa().getData();
+        List<CustomerCasa> customerCasas = loyaltyCollectDataClient.getLstCurrentCasa(RequestUtils.extractRequestId()).getData();
     }
 }

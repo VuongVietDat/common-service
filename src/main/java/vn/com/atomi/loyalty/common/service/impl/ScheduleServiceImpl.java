@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
+import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.common.dto.output.CustomerCasa;
 import vn.com.atomi.loyalty.common.entity.ScheduleInfo;
 import vn.com.atomi.loyalty.common.enums.ErrorCode;
@@ -39,7 +40,7 @@ public class ScheduleServiceImpl extends BaseService implements ScheduleService 
   @SuppressWarnings("unchecked")
   public void startJobNow(Long id) throws SchedulerException, ClassNotFoundException {
 
-    List<CustomerCasa> customerCasas = loyaltyCollectDataClient.getLstCurrentCasa().getData();
+    List<CustomerCasa> customerCasas = loyaltyCollectDataClient.getLstCurrentCasa(RequestUtils.extractRequestId()).getData();
 
     ScheduleInfo scheduleInfo =
         scheduleRepository
