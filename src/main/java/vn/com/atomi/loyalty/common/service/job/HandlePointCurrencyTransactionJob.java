@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class HandlePointCASAJob extends QuartzJobBean {
+public class HandlePointCurrencyTransactionJob extends QuartzJobBean {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(HandlePointExpirationJob.class);
 
@@ -59,7 +59,7 @@ public class HandlePointCASAJob extends QuartzJobBean {
             scheduleLog = scheduleLogRepository.save(scheduleLog);
         }
         try {
-            loyaltyCoreClient.calculatePointCasa(executeId);
+            loyaltyCoreClient.calculatePointCurrencyTransaction(executeId,"01/01/2024", "31/12/2024");
             status = StatusJob.SUCCESS;
         } catch (Exception e) {
             msg = e.getMessage();
