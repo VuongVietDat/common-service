@@ -25,12 +25,12 @@ public interface LoyaltyCoreClient {
             @RequestHeader(RequestConstant.REQUEST_ID) String requestId);
 
     @Operation(summary = "Api (nội bộ) thực hiện tính điểm dựa vào số dư CASA bình quân")
-    @PostMapping("/internal/points-casa")
+    @PostMapping("/internal/customers/points/casa")
     ResponseData<String> calculatePointCasa(
             @RequestHeader(RequestConstant.REQUEST_ID) String requestId);
 
     @Operation(summary = "Api (nội bộ) thực hiện tính điểm cho giao dịch mua bán ngoại tệ tại quầy")
-    @PostMapping("/internal/points-currencyTransaction")
+    @PostMapping("/internal/customers/points/currencyTransaction")
     ResponseData<String> calculatePointCurrencyTransaction(
             @RequestHeader(RequestConstant.REQUEST_ID) String requestId,
             @RequestParam(required = false) String startDate,
