@@ -36,6 +36,11 @@ public class LoyaltyCoreClientFallbackFactory implements FallbackFactory<Loyalty
             public ResponseData<String> calculatePointCurrencyTransaction(String requestId, String startDate, String endDate) {
                 throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
             }
+
+            @Override
+            public ResponseData<String> calculatePointCard(String requestId, String startDate, String endDate) {
+                throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
+            }
         };
     }
 }
