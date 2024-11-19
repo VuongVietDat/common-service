@@ -35,4 +35,11 @@ public interface LoyaltyCoreClient {
             @RequestHeader(RequestConstant.REQUEST_ID) String requestId,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate);
+
+    @Operation(summary = "Api (nội bộ) thực hiện tính điểm cho giao dịch giao dịch thẻ")
+    @PostMapping("/internal/customers/points/card")
+    ResponseData<String> calculatePointCard(
+            @RequestHeader(RequestConstant.REQUEST_ID) String requestId,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate);
 }
