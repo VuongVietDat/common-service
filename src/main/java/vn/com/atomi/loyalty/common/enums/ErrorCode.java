@@ -23,6 +23,7 @@ public enum ErrorCode implements AbstractError {
       2004,
       "Sai tên đăng nhập/ mật khẩu quá 5 lần sẽ bị khóa. Bạn còn %d lần thử lại.",
       HttpStatus.UNAUTHORIZED),
+  USER(2002, "Người dùng không tồn tại", HttpStatus.UNAUTHORIZED),
   ;
 
   private final int code;
