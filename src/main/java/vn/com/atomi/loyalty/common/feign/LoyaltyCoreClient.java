@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.ResponseData;
+import vn.com.atomi.loyalty.common.dto.input.TransactionInput;
 import vn.com.atomi.loyalty.common.feign.fallback.LoyaltyCoreClientFallbackFactory;
 
 /**
@@ -42,4 +43,9 @@ public interface LoyaltyCoreClient {
             @RequestHeader(RequestConstant.REQUEST_ID) String requestId,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate);
+    @Operation(summary = "Api (nội bộ) thực hiện cộng điểm")
+    @PostMapping("/internal/customers/points/plus-point")
+    ResponseData<Long> plusAmount(
+            @RequestHeader(RequestConstant.REQUEST_ID) String requestId,
+            TransactionInput transactionInput);
 }

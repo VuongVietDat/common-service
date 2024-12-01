@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
+import vn.com.atomi.loyalty.common.dto.input.TransactionInput;
 import vn.com.atomi.loyalty.common.feign.LoyaltyCoreClient;
 
 /**
@@ -39,6 +40,10 @@ public class LoyaltyCoreClientFallbackFactory implements FallbackFactory<Loyalty
 
             @Override
             public ResponseData<String> calculatePointCard(String requestId, String startDate, String endDate) {
+                throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
+            }
+            @Override
+            public ResponseData<Long> plusAmount(String requestId, TransactionInput transactionInput) {
                 throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
             }
         };

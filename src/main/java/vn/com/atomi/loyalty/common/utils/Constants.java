@@ -19,11 +19,16 @@ public class Constants {
     public static final String STATUS_PENDING = "PENDING";
     public static final String STATUS_INPROGRESS = "INPROGRESS";
     public static final String STATUS_COMPLETED = "COMPLETED";
+    public static final String STATUS_CLAIMED = "CLAIMED";
     public static final String TYPE_CHAIN = "C";
     public static final String TYPE_GROUP = "G";
     public static final String TYPE_MISSION = "M";
     public static final String GROUP_TYPE_AND = "1";
-
+  }
+  public class Gift {
+    public static final String TYPE_POINT = "P";
+    public static final String TYPE_VOUCHER = "V";
+    public static final String TYPE_GIFT = "G";
   }
   private Constants() {
     throw new IllegalStateException("Utility class");

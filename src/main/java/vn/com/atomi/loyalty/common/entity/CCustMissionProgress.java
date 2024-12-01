@@ -28,7 +28,11 @@ public class CCustMissionProgress {
 
     @NotNull
     @Column(name = "CUSTOMER_ID", nullable = false)
-    private Long customer;
+    private Long customerId;
+
+    @NotNull
+    @Column(name = "CIF_NO", columnDefinition = "VARCHAR2(50)")
+    private String cifNo;
 
     @Column(name = "PARENT_ID")
     private Long parentId;

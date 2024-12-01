@@ -1,6 +1,5 @@
 package vn.com.atomi.loyalty.common.feign.fallback;
 
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -8,9 +7,12 @@ import org.springframework.stereotype.Component;
 import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
+import vn.com.atomi.loyalty.common.dto.output.RulePOCOutput;
 import vn.com.atomi.loyalty.common.dto.output.SourceDataMapOutput;
 import vn.com.atomi.loyalty.common.enums.SourceGroup;
 import vn.com.atomi.loyalty.common.feign.LoyaltyConfigClient;
+
+import java.util.List;
 
 /**
  * @author haidv
@@ -33,6 +35,10 @@ public class LoyaltyConfigClientFallbackFactory implements FallbackFactory<Loyal
       @Override
       public ResponseData<List<SourceDataMapOutput>> getAllSourceDataMap(
           String requestId, SourceGroup sourceGroup) {
+        throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
+      }
+      @Override
+      public ResponseData<RulePOCOutput> getRulePoc(String requestId, String type) {
         throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
       }
     };

@@ -11,13 +11,12 @@ public interface CCustMissionProgressRepository extends JpaRepository<CCustMissi
     @Query(value= """
         SELECT cmps FROM CCustMissionProgress cmps 
         WHERE cmps.status = :status
-        AND cmps.missionType != :missionType
     """)
-    List<CCustMissionProgress> findMissionProgressByCondition (String status, String missionType);
+    List<CCustMissionProgress> findMissionProgressByCondition (String status);
 
     @Query(value= """
         SELECT count(1) FROM CCustMissionProgress cmps 
-        WHERE cmps.customer = :customerId
+        WHERE cmps.customerId = :customerId
         AND cmps.parentId = :parentId
         AND cmps.status != :status
     """)
@@ -25,7 +24,7 @@ public interface CCustMissionProgressRepository extends JpaRepository<CCustMissi
 
     @Query(value= """
         SELECT count(1) FROM CCustMissionProgress cmps 
-        WHERE cmps.customer = :customerId
+        WHERE cmps.customerId = :customerId
         AND cmps.parentId = :parentId
         AND cmps.status = :status
     """)
@@ -33,17 +32,16 @@ public interface CCustMissionProgressRepository extends JpaRepository<CCustMissi
     @Query(value= """
         UPDATE CCustMissionProgress cmps 
         SET cmps.status = :status
-        WHERE cmps.customer = :customerId
+        WHERE cmps.customerId = :customerId
         AND cmps.missionId = :missionId
     """)
-    void updateParentMission(Long missionId, Long customerId, String status);
+    void updateParentMission1(Long missionId, Long customerId, String status);
 
     @Query(value= """
-        UPDATE CCustMissionProgress cmps 
-        SET cmps.status = :status
-        WHERE cmps.customer = :customerId
-        AND cmps.parentId = :parentId
-    """)
-    void updateGroupMission(Long parentId, Long customerId, String status);
+        UPDATE C_CUST_MISSION_PROGRESS SET STATUS = :status
+        WHERE CUSTOMER_ID = :customerId 
+        AND MISSION_ID = :missionId
+    """, nativeQuery = true)
+    void updateParentMission(String status,Long customerId, Long missionId );
 
 }
