@@ -3,8 +3,8 @@ package vn.com.atomi.loyalty.common.dto.output;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.atomi.loyalty.config.enums.ConditionProperties;
-import vn.com.atomi.loyalty.config.enums.Operators;
+import vn.com.atomi.loyalty.common.enums.ConditionProperties;
+import vn.com.atomi.loyalty.common.enums.Operators;
 
 /**
  * @author haidv
