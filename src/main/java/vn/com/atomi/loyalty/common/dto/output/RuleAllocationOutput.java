@@ -3,7 +3,7 @@ package vn.com.atomi.loyalty.common.dto.output;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.atomi.loyalty.config.enums.Frequency;
+import vn.com.atomi.loyalty.common.enums.Frequency;
 
 /**
  * @author haidv
